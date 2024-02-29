@@ -15,6 +15,7 @@ public class ContactHandle implements ContactListener {
         switch (fixC) {
             case Boot.CHARACTER_BIT | Boot.GROUND_BIT:
                 MainCharacter.isFalling = false;
+                MainCharacter.isJumping = false;
         }
     }
 

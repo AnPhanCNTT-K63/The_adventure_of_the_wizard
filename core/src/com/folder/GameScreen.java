@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM, Boot.screenHeight / Boot.PPM, camera);
+        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 250 / Boot.PPM, Boot.screenHeight / Boot.PPM - 250 / Boot.PPM, camera);
 
         hud = new Status(batch);
 
@@ -105,6 +105,7 @@ public class GameScreen implements Screen {
         batch.end();
 
         debug.render(world, camera.combined);
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.folder.Object;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -11,7 +12,7 @@ import com.folder.GameScreen;
 import com.folder.Tool.InputAdvance;
 
 public class MainCharacter extends Sprite {
-    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK, LOOKING}
+    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK, LOOK_UP, LOOK_DOWN}
 
     World world;
     static public Body body;
@@ -25,19 +26,24 @@ public class MainCharacter extends Sprite {
     Animation<TextureRegion> jump;
     Animation<TextureRegion> fall;
     TextureRegion attack;
-    TextureRegion look;
+    TextureRegion lookUp;
+    TextureRegion lookDown;
 
     static public float stateTime;
 
+    //State handle
     static public boolean isTurningRight;
     static public boolean isMoving;
-    static public boolean canMove;
     static public boolean isJumping;
-    static public boolean isAttack;
+    static public boolean isAttacking;
     static public boolean isLooking;
     static public boolean isLookingUp;
     static public boolean isReturn;
     static public boolean isFalling;
+
+    //Character handle
+    static public boolean canMove;
+    static public boolean isAllowedJumping;
 
     public MainCharacter(GameScreen screen) {
         world = screen.getWorld();
@@ -45,12 +51,13 @@ public class MainCharacter extends Sprite {
         isTurningRight = true;
         isJumping = false;
         isMoving = false;
-        isAttack = false;
+        isAttacking = false;
         isLooking = false;
         isLookingUp = false;
         isReturn = false;
         isFalling = false;
-
+        isAllowedJumping = false;
+        canMove = true;
 
         currenState = previousState = STATE.IDLE;
         Array<TextureRegion> frames = new Array<TextureRegion>();
@@ -72,18 +79,20 @@ public class MainCharacter extends Sprite {
         frames.clear();
 
         for (int i = 3; i < 5; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegion("Jump"), i * 128 + 16, 58, 64, 80));
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("Jump"), i * 128 + 16, 48, 64, 80));
         jump = new Animation<TextureRegion>(1 / 4f, frames);
         frames.clear();
 
         for (int i = 4; i < 6; i++)
-            frames.add(new TextureRegion(screen.getAtlas().findRegion("Jump"), i * 128 + 16, 58, 64, 80));
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("Jump"), i * 128 + 16, 48, 64, 80));
         fall = new Animation<TextureRegion>(1 / 4f, frames);
         frames.clear();
 
         attack = new TextureRegion(screen.getAtlas().findRegion("Flame_jet"), 7 * 128, 48, 128, 80);
 
-        look = new TextureRegion(screen.getAtlas().findRegion("Idle"), 0, 0, 128, 128);
+        lookUp = new TextureRegion(screen.getAtlas().findRegion("Idle"), 16, 48, 64, 80);
+
+        lookDown = new TextureRegion(screen.getAtlas().findRegion("Idle"), 16, 48, 64, 80);
 
         MainCharacterDef();
 
@@ -118,10 +127,13 @@ public class MainCharacter extends Sprite {
                 region = jump.getKeyFrame(stateTime);
                 break;
             case ATTACK:
-                region = flameAttack.getKeyFrame(stateTime, true);
+                region = flameAttack.getKeyFrame(stateTime);
                 break;
-            case LOOKING:
-                region = look;
+            case LOOK_UP:
+                region = lookUp;
+                break;
+            case LOOK_DOWN:
+                region = lookDown;
                 break;
             case FALL:
                 region = fall.getKeyFrame(stateTime);
@@ -145,18 +157,13 @@ public class MainCharacter extends Sprite {
 
     public STATE getState() {
         if (isMoving) {
-            canMove = true;
             return STATE.RUN;
-        } else if (isJumping)
-            return STATE.JUMP;
-        else if (isAttack)
-            return STATE.ATTACK;
-        else if (isLooking)
-            return STATE.LOOKING;
-        else if (isFalling)
-            return STATE.FALL;
-        else
-            return STATE.IDLE;
+        } else if (isJumping) return STATE.JUMP;
+        else if (isAttacking) return STATE.ATTACK;
+        else if (isLookingUp) return STATE.LOOK_UP;
+        else if (isLooking) return STATE.LOOK_DOWN;
+        else if (isFalling) return STATE.FALL;
+        else return STATE.IDLE;
     }
 
     public void inputHandle() {
@@ -175,37 +182,42 @@ public class MainCharacter extends Sprite {
             if (canMove)
                 posX += (float) (-10.5 / Boot.PPM);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            isAttack = true;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            isJumping = true;
-        }
-        if (isJumping)
-            body.applyLinearImpulse(new Vector2(0, 0.3f), body.getWorldCenter(), true);
-        if (isLooking && stateTime >= 1f)
+
+        isAllowedJumping = !isFalling;
+        if (isLooking && stateTime >= 0.7f) {
             if (isLookingUp)
-                GameScreen.camera.position.y += 15 / Boot.PPM;
-            else
-                GameScreen.camera.position.y -= 15 / Boot.PPM;
-        if (isReturn) {
-            GameScreen.camera.position.y = body.getPosition().y + 35 / Boot.PPM;
-            isReturn = false;
+                GameScreen.camera.position.y += 2.5f / Boot.PPM;
+            else GameScreen.camera.position.y -= 2.5f / Boot.PPM;
+            if (GameScreen.camera.position.y >= 450 / Boot.PPM)
+                GameScreen.camera.position.y = 450 / Boot.PPM;
+            else if (GameScreen.camera.position.y <= 270 / Boot.PPM)
+                GameScreen.camera.position.y = 270 / Boot.PPM;
         }
 
-        if (isMoving && isJumping)
-            isMoving = false;
-        if (isMoving && isAttack) {
+        if (isReturn) {
+            if (GameScreen.camera.position.y >= 360 / Boot.PPM) {
+                GameScreen.camera.position.y -= 2.5f / Boot.PPM;
+            } else if (GameScreen.camera.position.y < 357 / Boot.PPM)
+                GameScreen.camera.position.y += 2.5f / Boot.PPM;
+        }
+        if (isMoving && isJumping) isMoving = false;
+        if (isAttacking && isMoving) {
             isMoving = false;
             canMove = false;
         }
+        if (isAttacking && stateTime >= 0.8f)
+            isAttacking = false;
+        if (isFalling && isMoving) isMoving = false;
         body.setTransform(posX, posY, 0);
     }
 
     public void update(float deltaTime) {
         inputHandle();
-        if (isAttack)
-            setBounds(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2, 128 / Boot.PPM, 80 / Boot.PPM);
+        if (isAttacking)
+            if (isTurningRight)
+                setBounds(body.getPosition().x - getWidth() / 2 + 32 / Boot.PPM, body.getPosition().y - getHeight() / 2, 128 / Boot.PPM, 80 / Boot.PPM);
+            else
+                setBounds(body.getPosition().x - getWidth() / 2 - 32 / Boot.PPM, body.getPosition().y - getHeight() / 2, 128 / Boot.PPM, 80 / Boot.PPM);
         else
             setBounds(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2, 64 / Boot.PPM, 80 / Boot.PPM);
         setRegion(getStatus(deltaTime));

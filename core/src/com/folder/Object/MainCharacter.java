@@ -188,16 +188,16 @@ public class MainCharacter extends Sprite {
             if (isLookingUp)
                 GameScreen.camera.position.y += 2.5f / Boot.PPM;
             else GameScreen.camera.position.y -= 2.5f / Boot.PPM;
-            if (GameScreen.camera.position.y >= 450 / Boot.PPM)
-                GameScreen.camera.position.y = 450 / Boot.PPM;
-            else if (GameScreen.camera.position.y <= 270 / Boot.PPM)
-                GameScreen.camera.position.y = 270 / Boot.PPM;
+            if (GameScreen.camera.position.y >= 309.99998f / Boot.PPM)
+                GameScreen.camera.position.y = 309.99998f / Boot.PPM;
+            else if (GameScreen.camera.position.y <= 159.99998f / Boot.PPM)
+                GameScreen.camera.position.y = 159.99998f / Boot.PPM;
         }
 
         if (isReturn) {
-            if (GameScreen.camera.position.y >= 360 / Boot.PPM) {
+            if (GameScreen.camera.position.y > 234.99998f / Boot.PPM) {
                 GameScreen.camera.position.y -= 2.5f / Boot.PPM;
-            } else if (GameScreen.camera.position.y < 357 / Boot.PPM)
+            } else if (GameScreen.camera.position.y < 232 / Boot.PPM)
                 GameScreen.camera.position.y += 2.5f / Boot.PPM;
         }
         if (isMoving && isJumping) isMoving = false;

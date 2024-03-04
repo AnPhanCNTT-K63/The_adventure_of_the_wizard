@@ -17,7 +17,6 @@ import com.folder.Boot;
 public class Status {
 
     private Texture texture;
-    private BitmapFont font;
 
     public Stage stage;
     private Viewport viewport;
@@ -25,7 +24,7 @@ public class Status {
     private static int score;
 
     static Label scoreLabel;
-    Label freestyleTest;
+    Label textLabel;
 
     private UI ui;
 
@@ -36,23 +35,21 @@ public class Status {
         texture = new Texture("hud.png");
         ui = new UI(texture, -50, Boot.screenHeight - (float) texture.getHeight() / 3, Boot.screenWidth * 3 / 8, Boot.screenHeight / 4);
 
-        font = new BitmapFont();
-        font.getData().setScale(2);
-
-
         Table table = new Table();
-        table.top();
         table.setFillParent(true);
+        table.top();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Minecraft.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("HalloweenSlimePersonalUse-4B80D.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 25;
+        parameter.size = 35;
         BitmapFont fontFree = generator.generateFont(parameter);
 
         scoreLabel = new Label(String.format("%6d", score), new Label.LabelStyle(fontFree, Color.WHITE));
-        freestyleTest = new Label("Test", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        textLabel = new Label("This is a test", new Label.LabelStyle(fontFree, Color.WHITE));
 
-        table.add(scoreLabel).padTop(75).padRight(820);
+        table.add(scoreLabel).padTop(75).padRight(830);
+        table.row();
+        table.add(textLabel).padRight(800);
         stage.addActor(table);
         stage.addActor(ui);
 

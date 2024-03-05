@@ -28,7 +28,11 @@ public class InputAdvance extends InputAdapter {
             MainCharacter.isAllowedJumping = false;
         }
         if (keycode == Input.Keys.Q)
-            MainCharacter.isAttacking = true;
+            MainCharacter.isAttacking_Flame = true;
+        if (keycode == Input.Keys.J)
+            MainCharacter.isAttacking_Normal = true;
+        if (keycode == Input.Keys.K)
+            MainCharacter.isAttacking_heavy = true;
 
         return true;
     }
@@ -50,6 +54,12 @@ public class InputAdvance extends InputAdapter {
             MainCharacter.isLooking = false;
             MainCharacter.isReturn = true;
         }
+
+        if (keycode == Input.Keys.J)
+            MainCharacter.isAttacking_Normal = false;
+        if (keycode == Input.Keys.K)
+            MainCharacter.isAttacking_heavy = false;
+
         return true;
     }
 

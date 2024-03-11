@@ -12,7 +12,7 @@ public class InputAdvance extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-        MainCharacter.stateTime = 0;d
+        MainCharacter.stateTime = 0;
         if (keycode == Input.Keys.W) {
             MainCharacter.isReturn = false;
             MainCharacter.isLooking = true;

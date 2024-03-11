@@ -122,7 +122,7 @@ public class MainCharacter extends Sprite {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getWidth() / 2 - 32 / Boot.PPM, getHeight() / 2 - 30 / Boot.PPM);
+        shape.setAsBox(getWidth() / 2 - 40 / Boot.PPM, getHeight() / 2 - 30 / Boot.PPM);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

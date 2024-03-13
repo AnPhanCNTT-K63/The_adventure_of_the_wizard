@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.Ground;
+import com.folder.Object.Trap;
 import com.folder.Object.MainCharacter;
 import com.folder.Tool.ContactHandle;
 
@@ -40,6 +41,7 @@ public class GameScreen implements Screen {
 
     //Object
     Ground ground;
+    Trap trap;
 
     MainCharacter player;
 
@@ -65,6 +67,7 @@ public class GameScreen implements Screen {
 
         //Object
         ground = new Ground(this);
+        trap = new Trap(this);
 
         player = new MainCharacter(this);
 

@@ -12,7 +12,7 @@ import com.folder.GameScreen;
 import com.folder.Tool.InputAdvance;
 
 public class MainCharacter extends Sprite {
-    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN}
+    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN,DEAD}
 
     World world;
     static public Body body;
@@ -34,6 +34,7 @@ public class MainCharacter extends Sprite {
     static public float stateTime;
 
     //State handle
+    public static boolean isDead;
     public static boolean isTurningRight;
     public static boolean isMoving;
     public static boolean isJumping;
@@ -127,7 +128,7 @@ public class MainCharacter extends Sprite {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = Boot.CHARACTER_BIT;
-        fixtureDef.filter.maskBits = Boot.GROUND_BIT;
+        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.TRAP_BIT;
 
         body.createFixture(fixtureDef);
         shape.dispose();
@@ -137,6 +138,8 @@ public class MainCharacter extends Sprite {
         currenState = getState();
         TextureRegion region;
         switch (currenState) {
+            case DEAD:
+                region = idle.getKeyFrame(stateTime, true);
             case RUN:
                 region = run.getKeyFrame(stateTime, true);
                 break;
@@ -179,7 +182,10 @@ public class MainCharacter extends Sprite {
     }
 
     public STATE getState() {
-        if (isMoving) {
+        if(isDead){
+            return STATE.DEAD;
+        }
+        else if (isMoving) {
             return STATE.RUN;
         } else if (isJumping) return STATE.JUMP;
         else if (isAttacking_Flame) return STATE.ATTACK_FLAME;
@@ -195,8 +201,11 @@ public class MainCharacter extends Sprite {
         Gdx.input.setInputProcessor(new InputAdvance());
         posX = body.getPosition().x;
         posY = body.getPosition().y;
-
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if(body.getPosition().y<0){
+            System.out.println("??");
+            isDead=true;
+        }
+         else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             isMoving = true;
             isTurningRight = true;
             if (canMove)
@@ -238,6 +247,7 @@ public class MainCharacter extends Sprite {
 
     public void update(float deltaTime) {
         inputHandle();
+
 //        if (isAttacking_Flame)
 //            if (isTurningRight)
 //                setBounds(body.getPosition().x - getWidth() / 2 + 32 / Boot.PPM, body.getPosition().y - getHeight() / 2, 128 / Boot.PPM, 80 / Boot.PPM);

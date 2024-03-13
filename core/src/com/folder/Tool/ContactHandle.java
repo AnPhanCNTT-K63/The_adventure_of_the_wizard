@@ -16,6 +16,10 @@ public class ContactHandle implements ContactListener {
             case Boot.CHARACTER_BIT | Boot.GROUND_BIT:
                 MainCharacter.isFalling = false;
                 MainCharacter.isJumping = false;
+                break;
+            case Boot.CHARACTER_BIT | Boot.TRAP_BIT:
+                MainCharacter.isDead = true;
+                break;
         }
     }
 

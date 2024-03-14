@@ -122,7 +122,7 @@ public class MainCharacter extends Sprite {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getWidth() / 2 - 40 / Boot.PPM, getHeight() / 2 - 30 / Boot.PPM);
+        shape.setAsBox(getWidth() / 2 - 45 / Boot.PPM, getHeight() / 2 - 30 / Boot.PPM);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -200,12 +200,12 @@ public class MainCharacter extends Sprite {
             isMoving = true;
             isTurningRight = true;
             if (canMove)
-                posX += (float) (10.5 / Boot.PPM);
+                posX += (float) (5.5 / Boot.PPM);
         } else if (Gdx.input.isKeyPressed((Input.Keys.A))) {
             isMoving = true;
             isTurningRight = false;
             if (canMove)
-                posX += (float) (-10.5 / Boot.PPM);
+                posX += (float) (-5.5 / Boot.PPM);
         }
 
         isAllowedJumping = !isFalling;

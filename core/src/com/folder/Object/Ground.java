@@ -36,7 +36,7 @@ public class Ground {
             shape.setAsBox(rect.getWidth() / 2 / Boot.PPM, rect.getHeight() / 2 / Boot.PPM);
             fixtureDef.shape = shape;
             fixtureDef.filter.categoryBits = Boot.GROUND_BIT;
-            fixtureDef.filter.maskBits = Boot.CHARACTER_BIT;
+            fixtureDef.filter.maskBits = Boot.CHARACTER_BIT | Boot.ENEMY_BIT;
 
             body.createFixture(fixtureDef);
         }

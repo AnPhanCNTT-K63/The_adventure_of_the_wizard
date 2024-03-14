@@ -12,7 +12,7 @@ public class InputAdvance extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-        MainCharacter.stateTime = 0;
+        //MainCharacter.stateTime = 0;
         if (keycode == Input.Keys.W) {
             MainCharacter.isReturn = false;
             MainCharacter.isLooking = true;
@@ -25,7 +25,7 @@ public class InputAdvance extends InputAdapter {
         }
         if (keycode == Input.Keys.SPACE && MainCharacter.isAllowedJumping) {
             MainCharacter.isJumping = true;
-            MainCharacter.body.applyLinearImpulse(new Vector2(0, 6f), MainCharacter.body.getWorldCenter(), true);
+            MainCharacter.body.applyLinearImpulse(new Vector2(0, 5f), MainCharacter.body.getWorldCenter(), true);
             MainCharacter.isAllowedJumping = false;
         }
         if (keycode == Input.Keys.Q) {

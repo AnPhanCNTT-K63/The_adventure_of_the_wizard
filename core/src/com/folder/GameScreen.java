@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.Ground;
 import com.folder.Object.MainCharacter;
+import com.folder.Object.Werewolves;
 import com.folder.Tool.ContactHandle;
 
 
@@ -37,11 +38,13 @@ public class GameScreen implements Screen {
     private Box2DDebugRenderer debug;
 
     private TextureAtlas atlas;
+    private TextureAtlas enemyAtlas;
 
     //Object
     Ground ground;
 
     MainCharacter player;
+    Werewolves werewolves;
 
     public GameScreen() {
 
@@ -62,11 +65,13 @@ public class GameScreen implements Screen {
         debug = new Box2DDebugRenderer();
 
         atlas = new TextureAtlas("wizard.atlas");
+        enemyAtlas = new TextureAtlas("Werewolve.atlas");
 
         //Object
         ground = new Ground(this);
 
         player = new MainCharacter(this);
+        werewolves = new Werewolves(this);
 
     }
 
@@ -83,6 +88,7 @@ public class GameScreen implements Screen {
         mapRenderer.setView(camera);
 
         player.update(deltaTime);
+        werewolves.update(deltaTime);
 
     }
 
@@ -101,6 +107,7 @@ public class GameScreen implements Screen {
         batch.begin();
 
         player.draw(batch);
+        werewolves.draw(batch);
 
         batch.end();
 
@@ -119,6 +126,10 @@ public class GameScreen implements Screen {
 
     public TextureAtlas getAtlas() {
         return atlas;
+    }
+
+    public TextureAtlas getEnemyAtlas() {
+        return enemyAtlas;
     }
 
     @Override

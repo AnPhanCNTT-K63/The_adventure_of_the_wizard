@@ -26,9 +26,8 @@ public class Ground {
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
 
-        for (MapObject object : tiledMap.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-
+        for (RectangleMapObject object : tiledMap.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Boot.PPM, (rect.getY() + rect.getHeight() / 2) / Boot.PPM);
             body = world.createBody(bodyDef);

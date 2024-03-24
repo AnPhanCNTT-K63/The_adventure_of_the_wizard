@@ -14,10 +14,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
-import com.folder.Object.Ground;
-import com.folder.Object.MainCharacter;
-import com.folder.Object.Werewolves;
-import com.folder.Tool.ContactHandle;
+import com.folder.Object.*;
+import com.folder.Tool.CollisionHandle;
 
 
 public class GameScreen implements Screen {
@@ -42,6 +40,7 @@ public class GameScreen implements Screen {
 
     //Object
     Ground ground;
+    ObjectTest object;
 
     MainCharacter player;
     Werewolves werewolves;
@@ -49,30 +48,31 @@ public class GameScreen implements Screen {
     public GameScreen() {
 
         world = new World(new Vector2(0, -10f), false);
-        world.setContactListener(new ContactHandle());
 
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 250 / Boot.PPM, Boot.screenHeight / Boot.PPM - 250 / Boot.PPM, camera);
+        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 350 / Boot.PPM, Boot.screenHeight / Boot.PPM - 300 / Boot.PPM, camera);
 
         hud = new Status(batch);
 
         mapLoader = new TmxMapLoader();
-        tiledMap = mapLoader.load("gameMap.tmx");
+        tiledMap = mapLoader.load("testMap2.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / Boot.PPM);
 
         debug = new Box2DDebugRenderer();
 
         atlas = new TextureAtlas("wizard.atlas");
-        enemyAtlas = new TextureAtlas("Werewolve.atlas");
+        enemyAtlas = new TextureAtlas("werewolves.atlas");
 
         //Object
         ground = new Ground(this);
+        object = new ObjectTest(this);
 
         player = new MainCharacter(this);
         werewolves = new Werewolves(this);
 
+        world.setContactListener(new CollisionHandle());
     }
 
     public void update(float deltaTime) {

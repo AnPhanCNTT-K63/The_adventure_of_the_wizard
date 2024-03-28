@@ -13,18 +13,15 @@ public class ObjectTest {
     World world;
    public static Body body;
 
-
-
     public ObjectTest(GameScreen screen) {
         tiledMap = screen.getMap();
-
         world = screen.getWorld();
 
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
 
-        for (RectangleMapObject object : tiledMap.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
+        for (RectangleMapObject object : tiledMap.getLayers().get(14).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Boot.PPM, (rect.getY() + rect.getHeight() / 2) / Boot.PPM);
@@ -33,7 +30,6 @@ public class ObjectTest {
             shape.setAsBox(rect.getWidth() / 2 / Boot.PPM, rect.getHeight() / 2 / Boot.PPM);
             fixtureDef.shape = shape;
             fixtureDef.filter.categoryBits = Boot.OBJECT_TEST_BIT;
-            fixtureDef.filter.maskBits = Boot.ATTACK_BIT;
 
             body.createFixture(fixtureDef);
         }

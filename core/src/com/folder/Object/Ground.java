@@ -11,33 +11,9 @@ import com.folder.Boot;
 import com.folder.GameScreen;
 import org.w3c.dom.css.Rect;
 
-public class Ground {
-    TiledMap tiledMap;
-
-    World world;
-    Body body;
-
-    public Ground(GameScreen screen) {
-        tiledMap = screen.getMap();
-
-        world = screen.getWorld();
-
-        BodyDef bodyDef = new BodyDef();
-        FixtureDef fixtureDef = new FixtureDef();
-        PolygonShape shape = new PolygonShape();
-
-        for (RectangleMapObject object : tiledMap.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = object.getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Boot.PPM, (rect.getY() + rect.getHeight() / 2) / Boot.PPM);
-            body = world.createBody(bodyDef);
-
-            shape.setAsBox(rect.getWidth() / 2 / Boot.PPM, rect.getHeight() / 2 / Boot.PPM);
-            fixtureDef.shape = shape;
-            fixtureDef.filter.categoryBits = Boot.GROUND_BIT;
-            fixtureDef.filter.maskBits = Boot.CHARACTER_BIT | Boot.ENEMY_BIT;
-
-            body.createFixture(fixtureDef);
-        }
+public class Ground extends InteractiveObject {
+    public Ground(GameScreen screen, RectangleMapObject object) {
+        super(screen, object);
+        setCategory(Boot.GROUND_BIT);
     }
 }

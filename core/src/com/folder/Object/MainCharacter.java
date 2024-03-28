@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class MainCharacter extends Sprite {
 
-    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL_1, ATTACK_NORMAL_2, ATTACK_NORMAL_3, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN, DEAD}
+    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL_1, ATTACK_NORMAL_2, ATTACK_NORMAL_3, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN, DEAD, ROLL}
 
     World world;
     static public Body body;
@@ -30,9 +30,11 @@ public class MainCharacter extends Sprite {
     Animation<TextureRegion> normalAttack2;
     Animation<TextureRegion> normalAttack3;
     Animation<TextureRegion> heavyAttack;
+    TextureRegion hurt;
     Animation<TextureRegion> jump;
     Animation<TextureRegion> fall;
     Animation<TextureRegion> dead;
+    Animation<TextureRegion> roll;
 
     TextureRegion lookUp;
     TextureRegion lookDown;
@@ -55,6 +57,7 @@ public class MainCharacter extends Sprite {
     public static boolean isHurt;
     public static boolean isBleeding;
     public static boolean isDead;
+    public static boolean isRolling;
     boolean setToDead;
     boolean isChangeSite;
     boolean isCreateFixture;
@@ -95,13 +98,14 @@ public class MainCharacter extends Sprite {
         isChangeSite = true;
         isHurt = false;
         isBleeding = false;
+        isRolling = false;
 
         attackCount = 0;
 
         isDead = false;
         setToDead = false;
 
-        heart = 100;
+        heart = 50;
 
         stateTime = 0;
 
@@ -171,13 +175,20 @@ public class MainCharacter extends Sprite {
         dead = new Animation<TextureRegion>(1 / 6f, frames);
         frames.clear();
 
+        for (int i = 0; i < 6; i++)
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("Roll"), i * 128, 0, 128, 128));
+        roll = new Animation<TextureRegion>(1 / 10f, frames);
+        frames.clear();
+
+        hurt = new TextureRegion(screen.getAtlas().findRegion("Hurt"), 0, 0, 128, 128);
+
         setUpBody();
     }
 
     public void setUpBody() {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(Boot.screenWidth / 2 / Boot.PPM, 207.5f / Boot.PPM + 100 / Boot.PPM);
+        bodyDef.position.set(250 / Boot.PPM, 207.5f / Boot.PPM + 100 / Boot.PPM);
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
@@ -186,7 +197,7 @@ public class MainCharacter extends Sprite {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = Boot.CHARACTER_BIT;
-        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT;
+        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT | Boot.ENEMY_BIT | Boot.WALL_BIT;
 
         body.createFixture(fixtureDef);
         shape.dispose();
@@ -222,16 +233,20 @@ public class MainCharacter extends Sprite {
                 isMoving = false;
 
             if (isAttacking_heavy) {
+                isRolling = false;
                 isAttacking_Normal = false;
                 isAttacking_Flame = false;
             }
 
             if (isAttacking_Normal) {
+                isRolling = false;
                 isAttacking_Flame = false;
             }
 
+            if (isAttacking_Flame)
+                isRolling = false;
 
-            if (isAttacking_heavy || isAttacking_Normal || isAttacking_Flame) {
+            if (isAttacking_heavy || isAttacking_Normal || isAttacking_Flame || isRolling) {
                 canMove = false;
                 isMoving = false;
             }
@@ -265,6 +280,8 @@ public class MainCharacter extends Sprite {
     public void inputHandle() {
         Gdx.input.setInputProcessor(new KeyUpHandle());
 
+        rollHandle();
+
         jumpHandle();
 
         attackHandle();
@@ -274,6 +291,13 @@ public class MainCharacter extends Sprite {
         siteHandle();
 
         lookHandle();
+    }
+
+    public void rollHandle() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) && isMoving) {
+            isRolling = true;
+        }
+
     }
 
     public void jumpHandle() {
@@ -290,7 +314,7 @@ public class MainCharacter extends Sprite {
         if (isAllowedJump) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 isJumping = true;
-                body.applyLinearImpulse(new Vector2(0, 5f), body.getWorldCenter(), true);
+                body.applyLinearImpulse(new Vector2(0, 4.4f), body.getWorldCenter(), true);
                 isAllowedJump = false;
             }
         }
@@ -307,12 +331,13 @@ public class MainCharacter extends Sprite {
         if (canMove) if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D))
             MainCharacter.isMoving = true;
 
-        if (isMoving) if (isTurningRight) velocity.set(5.5f, 0);
-        else velocity.set(-5.5f, 0);
+        if (isMoving) if (isTurningRight) velocity.set(4.3f, 0);
+        else velocity.set(-4.3f, 0);
         else velocity.set(0, 0);
 
         velocity.y = body.getLinearVelocity().y;
         body.setLinearVelocity(velocity);
+
     }
 
     public void siteHandle() {
@@ -339,38 +364,39 @@ public class MainCharacter extends Sprite {
 
     public void setCameraLooking() {
         if (isLooking && stateTime >= 0.7f) {
-            if (isLookingUp) GameScreen.camera.position.y += 2.5f / Boot.PPM;
-            else GameScreen.camera.position.y -= 2.5f / Boot.PPM;
-            if (GameScreen.camera.position.y >= 309.99998f / Boot.PPM)
-                GameScreen.camera.position.y = 309.99998f / Boot.PPM;
-            else if (GameScreen.camera.position.y <= 159.99998f / Boot.PPM)
-                GameScreen.camera.position.y = 159.99998f / Boot.PPM;
+            if (isLookingUp) GameScreen.camera.position.y += 4.5f / Boot.PPM;
+            else GameScreen.camera.position.y -= 4.5f / Boot.PPM;
+            if (GameScreen.camera.position.y >= 282f / Boot.PPM)
+                GameScreen.camera.position.y = 282 / Boot.PPM;
+            else if (GameScreen.camera.position.y <= 138 / Boot.PPM)
+                GameScreen.camera.position.y = 138 / Boot.PPM;
         }
 
         if (isReturn) {
-            if (GameScreen.camera.position.y > 234.99998f / Boot.PPM) {
-                GameScreen.camera.position.y -= 2.5f / Boot.PPM;
-            } else if (GameScreen.camera.position.y < 232 / Boot.PPM) GameScreen.camera.position.y += 2.5f / Boot.PPM;
+            if (GameScreen.camera.position.y > 210f / Boot.PPM) {
+                GameScreen.camera.position.y -= 4.5f / Boot.PPM;
+            } else if (GameScreen.camera.position.y < 208 / Boot.PPM) GameScreen.camera.position.y += 4.5f / Boot.PPM;
         }
     }
 
     public void timeToDestroyFixture() {
-        setTimeToDestroyFixture(isAttacking_heavy, 0.8f, 0);
-        setTimeToDestroyFixture(isAttacking_Normal, 0.45f, 0);
+        setTimeToDestroyFixture(isAttacking_heavy, 0.8f);
+        setTimeToDestroyFixture(isAttacking_Normal, 0.45f);
+        setTimeToDestroyFixture(isAttacking_Flame, 1f);
     }
 
 
-    public void setTimeToDestroyFixture(boolean action, float time, float timeToDestroy) {
+    public void setTimeToDestroyFixture(boolean action, float time) {
         if (action) {
             if (actionDuration >= time) {
+                destroyFixtureAttack();
                 isCreateFixture = true;
-                destroyFixtureAttack(timeToDestroy);
             }
         }
     }
 
-    public void destroyFixtureAttack(float time) {
-        if (actionDuration >= time) for (Fixture fixture : fixtures)
+    public void destroyFixtureAttack() {
+        for (Fixture fixture : fixtures)
             if (fixture.isSensor()) body.destroyFixture(fixture);
         fixtures.clear();
     }
@@ -402,6 +428,14 @@ public class MainCharacter extends Sprite {
             actionDuration += deltaTime;
         }
 
+        if (isRolling) {
+            if (actionDuration >= 0.6f) {
+                isRolling = false;
+                actionDuration = 0;
+            }
+            actionDuration += deltaTime;
+        }
+
         if (isBleeding) {
             if (BleedingEffect.bleedingDuration >= 0.35f) {
                 isBleeding = false;
@@ -414,7 +448,8 @@ public class MainCharacter extends Sprite {
 
     public void setAttackBound() {
         if (isAttacking_heavy) createFixture(0.58f, 32, 3, 40, 2, 0, Boot.ATTACK_BIT, Boot.ENEMY_BIT);
-        else if (isAttacking_Normal) createFixture(0.2f, 30, 15, 30, 0, 0, Boot.ATTACK_BIT, Boot.ENEMY_BIT);
+        else if (isAttacking_Normal) createFixture(0.3f, 30, 15, 30, 0, 0, Boot.ATTACK_BIT, Boot.ENEMY_BIT);
+        else if (isAttacking_Flame) createFixture(0.48f, 40, 25, 35, 10, 0, Boot.ATTACK_BIT, Boot.ENEMY_BIT);
     }
 
     public void createFixture(float time, float width, float height, float x, float y, float angle, short categoryBit, short maskBit) {
@@ -476,6 +511,9 @@ public class MainCharacter extends Sprite {
             case DEAD:
                 region = dead.getKeyFrame(stateTime);
                 break;
+            case ROLL:
+                region = roll.getKeyFrame(stateTime);
+                break;
             default:
                 region = idle.getKeyFrame(stateTime, true);
                 break;
@@ -507,6 +545,7 @@ public class MainCharacter extends Sprite {
         else if (isLooking) return STATE.LOOK_DOWN;
         else if (isFalling) return STATE.FALL;
         else if (isDead) return STATE.DEAD;
+        else if (isRolling) return STATE.ROLL;
         else return STATE.IDLE;
     }
 

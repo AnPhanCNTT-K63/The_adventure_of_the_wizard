@@ -3,6 +3,7 @@ package com.folder.Tool;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.folder.Object.MainCharacter;
+import jdk.tools.jmod.Main;
 
 public class KeyUpHandle extends InputAdapter {
 
@@ -25,6 +26,7 @@ public class KeyUpHandle extends InputAdapter {
             MainCharacter.isLookingUp = false;
             MainCharacter.isReturn = true;
         }
+
 
         return true;
     }

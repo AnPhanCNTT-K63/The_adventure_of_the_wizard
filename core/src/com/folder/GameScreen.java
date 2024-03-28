@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.*;
 import com.folder.Tool.CollisionHandle;
+import com.folder.Tool.CreateBody;
 
 
 public class GameScreen implements Screen {
@@ -37,10 +38,12 @@ public class GameScreen implements Screen {
 
     private TextureAtlas atlas;
     private TextureAtlas enemyAtlas;
+    private TextureAtlas AnimationTileSetAtlas;
 
     //Object
-    Ground ground;
+    private CreateBody createBody;
     ObjectTest object;
+    AnimationTileSet animationTileSet;
 
     MainCharacter player;
     Werewolves werewolves;
@@ -52,25 +55,26 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 350 / Boot.PPM, Boot.screenHeight / Boot.PPM - 300 / Boot.PPM, camera);
-
+        //gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM , Boot.screenHeight / Boot.PPM , camera);
+        gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 1040 / Boot.PPM, Boot.screenHeight / Boot.PPM - 660 / Boot.PPM, camera);
         hud = new Status(batch);
 
         mapLoader = new TmxMapLoader();
-        tiledMap = mapLoader.load("testMap2.tmx");
+        tiledMap = mapLoader.load("testMap1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / Boot.PPM);
 
         debug = new Box2DDebugRenderer();
 
         atlas = new TextureAtlas("wizard.atlas");
         enemyAtlas = new TextureAtlas("werewolves.atlas");
+        AnimationTileSetAtlas = new TextureAtlas("AnimationTileset.atlas");
 
-        //Object
-        ground = new Ground(this);
-        object = new ObjectTest(this);
+        // object = new ObjectTest(this);
+        animationTileSet = new AnimationTileSet(this);
 
         player = new MainCharacter(this);
         werewolves = new Werewolves(this);
+        createBody = new CreateBody(this);
 
         world.setContactListener(new CollisionHandle());
     }
@@ -83,13 +87,16 @@ public class GameScreen implements Screen {
         camera.position.x = player.getBody().getPosition().x;
         //camera.position.y = player.getBody().getPosition().y;
 
+        if (camera.position.x <= 440 / Boot.PPM)
+            camera.position.x = 440 / Boot.PPM;
+
         camera.update();
 
         mapRenderer.setView(camera);
 
         player.update(deltaTime);
         werewolves.update(deltaTime);
-
+        animationTileSet.update(deltaTime);
     }
 
     @Override
@@ -108,11 +115,11 @@ public class GameScreen implements Screen {
 
         player.draw(batch);
         werewolves.draw(batch);
+        animationTileSet.draw(batch);
 
         batch.end();
 
         debug.render(world, camera.combined);
-
     }
 
 
@@ -130,6 +137,10 @@ public class GameScreen implements Screen {
 
     public TextureAtlas getEnemyAtlas() {
         return enemyAtlas;
+    }
+
+    public TextureAtlas getAnimationTileSetAtlas() {
+        return AnimationTileSetAtlas;
     }
 
     @Override

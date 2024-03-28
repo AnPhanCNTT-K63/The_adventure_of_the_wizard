@@ -21,10 +21,18 @@ public class CollisionHandle implements ContactListener {
                 break;
             case Boot.ATTACK_BIT | Boot.ENEMY_BIT:
                 Werewolves.beDamaged();
-                System.out.println("Ouch");
+                System.out.println("ouch");
                 break;
             case Boot.ENEMY_ATTACK_BIT | Boot.CHARACTER_BIT:
                 MainCharacter.beDamaged();
+                break;
+            case Boot.CHARACTER_BIT | Boot.ENEMY_BIT:
+                break;
+            case Boot.ENEMY_BIT | Boot.WALL_BIT:
+                Werewolves.isReverse = true;
+                break;
+            case Boot.CHARACTER_BIT | Boot.WALL_BIT:
+                Werewolves.isReverse = true;
                 break;
         }
     }

@@ -80,8 +80,6 @@ public class Werewolves extends Enemy {
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
-        setBounds(0, 0, 128 / Boot.PPM, 128 / Boot.PPM);
-
         for (int i = 0; i < 11; i++)
             frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("walk"), i * 128, 0, 128, 128));
         Walk = new Animation<TextureRegion>(1 / 11f, frames);
@@ -107,11 +105,12 @@ public class Werewolves extends Enemy {
         Dead = new Animation<TextureRegion>(1f, frames);
         frames.clear();
 
-        setUpBody();
     }
 
     @Override
     public void setUpBody() {
+        setBounds(0, 0, 128 / Boot.PPM, 128 / Boot.PPM);
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(Boot.screenWidth / 2 / Boot.PPM + 400 / Boot.PPM / Boot.PPM, Boot.screenHeight / 2 / Boot.PPM - 300 / Boot.PPM);
@@ -281,7 +280,7 @@ public class Werewolves extends Enemy {
     }
 
     public void destroyFixture() {
-         for (Fixture fixture : fixtures)
+        for (Fixture fixture : fixtures)
             if (fixture.isSensor()) body.destroyFixture(fixture);
         fixtures.clear();
     }

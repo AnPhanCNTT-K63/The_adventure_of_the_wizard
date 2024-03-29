@@ -16,6 +16,8 @@ public class Boot extends Game {
     public static final short ATTACK_BIT = 8;
     public static final short ENEMY_ATTACK_BIT = 16;
     public static final short WALL_BIT = 32;
+    public static final short TOUCH_POINT_ON_AIR = 64;
+    public static final short HANG_POINT_BIT = 128;
     public static final short OBJECT_TEST_BIT = 12;
 
     @Override

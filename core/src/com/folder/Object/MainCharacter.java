@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class MainCharacter extends Sprite {
 
-    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL_1, ATTACK_NORMAL_2, ATTACK_NORMAL_3, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN, DEAD, ROLL}
+    enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL_1, ATTACK_NORMAL_2, ATTACK_NORMAL_3, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN, DEAD, ROLL, HANG, PULL_UP}
 
     World world;
     static public Body body;
@@ -30,6 +30,8 @@ public class MainCharacter extends Sprite {
     Animation<TextureRegion> normalAttack2;
     Animation<TextureRegion> normalAttack3;
     Animation<TextureRegion> heavyAttack;
+    Animation<TextureRegion> hang;
+    Animation<TextureRegion> pullUp;
     TextureRegion hurt;
     Animation<TextureRegion> jump;
     Animation<TextureRegion> fall;
@@ -58,15 +60,18 @@ public class MainCharacter extends Sprite {
     public static boolean isBleeding;
     public static boolean isDead;
     public static boolean isRolling;
+    public static boolean isHanging;
+    public static boolean isPullUp;
     boolean setToDead;
     boolean isChangeSite;
     boolean isCreateFixture;
 
     public static Vector2 velocity;
 
-    static public boolean canMove;
-
+    static public boolean isAllowedMove;
     static public boolean isAllowedJump;
+    public static boolean isOnAir;
+    public static boolean isTouchAirGround;
 
     static public float jumpDistance;
 
@@ -75,6 +80,9 @@ public class MainCharacter extends Sprite {
     int heart;
 
     int attackCount;
+
+    public static float yHang;
+    public static float xHang;
 
     public MainCharacter(GameScreen screen) {
         world = screen.getWorld();
@@ -92,13 +100,18 @@ public class MainCharacter extends Sprite {
         isReturn = false;
         isFalling = false;
         isAllowedJump = true;
-        canMove = false;
+        isAllowedMove = false;
         isDestroy = false;
         isCreateFixture = true;
         isChangeSite = true;
         isHurt = false;
         isBleeding = false;
         isRolling = false;
+        isHanging = false;
+        isPullUp = false;
+
+        isOnAir = false;
+        isTouchAirGround = false;
 
         attackCount = 0;
 
@@ -106,6 +119,9 @@ public class MainCharacter extends Sprite {
         setToDead = false;
 
         heart = 50;
+
+        yHang = 0;
+        xHang = 0;
 
         stateTime = 0;
 
@@ -123,8 +139,9 @@ public class MainCharacter extends Sprite {
         for (int i = 0; i < 7; i++)
             frames.add(new TextureRegion(screen.getAtlas().findRegion("Idle"), i * 128, 0, 128, 128));
         idle = new Animation<TextureRegion>(1 / 3f, frames);
-        setBounds(0, 0, 128 / Boot.PPM, 128 / Boot.PPM);
         frames.clear();
+
+        setBounds(0, 0, 128 / Boot.PPM, 128 / Boot.PPM);
 
         for (int i = 0; i < 8; i++)
             frames.add(new TextureRegion(screen.getAtlas().findRegion("Run"), i * 128, 0, 128, 128));
@@ -180,6 +197,16 @@ public class MainCharacter extends Sprite {
         roll = new Animation<TextureRegion>(1 / 10f, frames);
         frames.clear();
 
+        for (int i = 0; i < 6; i++)
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("Hang"), i * 128, 0, 128, 128));
+        hang = new Animation<TextureRegion>(1 / 6f, frames);
+        frames.clear();
+
+        for (int i = 0; i < 5; i++)
+            frames.add(new TextureRegion(screen.getAtlas().findRegion("Pull_up"), i * 128, 0, 128, 128));
+        pullUp = new Animation<TextureRegion>(1 / 10f, frames);
+        frames.clear();
+
         hurt = new TextureRegion(screen.getAtlas().findRegion("Hurt"), 0, 0, 128, 128);
 
         setUpBody();
@@ -197,27 +224,31 @@ public class MainCharacter extends Sprite {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = Boot.CHARACTER_BIT;
-        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT | Boot.ENEMY_BIT | Boot.WALL_BIT;
+        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT | Boot.ENEMY_BIT | Boot.WALL_BIT | Boot.TOUCH_POINT_ON_AIR | Boot.HANG_POINT_BIT;
 
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData(this);
         shape.dispose();
     }
 
     public void update(float deltaTime) {
         action(deltaTime);
-        if (isBleeding && !isDead)
-            bleedingEffect.update(deltaTime, body.getPosition().x, body.getPosition().y);
+        if (isBleeding && !isDead) bleedingEffect.update(deltaTime, body.getPosition().x, body.getPosition().y);
 
-        if (isTurningRight)
+        if (!isPullUp) if (isTurningRight)
             setBounds(body.getPosition().x - getWidth() / 2 + 16 / Boot.PPM, body.getPosition().y - getHeight() / 2 + 32 / Boot.PPM, 128 / Boot.PPM, 128 / Boot.PPM);
         else
             setBounds(body.getPosition().x - getWidth() / 2 - 16 / Boot.PPM, body.getPosition().y - getHeight() / 2 + 32 / Boot.PPM, 128 / Boot.PPM, 128 / Boot.PPM);
+        else {
+            if (isTurningRight)
+                setBounds(body.getPosition().x - getWidth() / 2 + 16 / Boot.PPM, body.getPosition().y - getHeight() / 2 - 40 / Boot.PPM, 128 / Boot.PPM, 128 / Boot.PPM);
+            else
+                setBounds(body.getPosition().x - getWidth() / 2 - 16 / Boot.PPM, body.getPosition().y - getHeight() / 2 - 40 / Boot.PPM, 128 / Boot.PPM, 128 / Boot.PPM);
+        }
 
         setRegion(getStatus(deltaTime));
     }
 
     public void action(float deltaTime) {
-
         if (isDead) {
             isFalling = false;
             isJumping = false;
@@ -229,8 +260,7 @@ public class MainCharacter extends Sprite {
         if (!isDead) {
             inputHandle();
 
-            if (isJumping || isFalling)
-                isMoving = false;
+            if (isJumping || isFalling) isMoving = false;
 
             if (isAttacking_heavy) {
                 isRolling = false;
@@ -243,24 +273,21 @@ public class MainCharacter extends Sprite {
                 isAttacking_Flame = false;
             }
 
-            if (isAttacking_Flame)
-                isRolling = false;
+            if (isAttacking_Flame) isRolling = false;
 
-            if (isAttacking_heavy || isAttacking_Normal || isAttacking_Flame || isRolling) {
-                canMove = false;
-                isMoving = false;
-            }
+            if (isAttacking_heavy || isAttacking_Normal || isAttacking_Flame || isRolling) isMoving = false;
 
             if (isHurt) {
                 heart--;
-                if (heart == 0)
-                    setToDead = true;
+                if (heart == 0) setToDead = true;
                 isHurt = false;
             }
 
-            canMove = !isAttacking_Flame && !isAttacking_heavy && !isAttacking_Normal;
+            if (isPullUp) isHanging = false;
 
-            isChangeSite = !isAttacking_Flame && !isAttacking_heavy && !isAttacking_Normal;
+            isAllowedMove = !isAttacking_Flame && !isAttacking_heavy && !isAttacking_Normal;
+
+            isChangeSite = !isAttacking_Flame && !isAttacking_heavy && !isAttacking_Normal && !isHanging;
 
             isAllowedJump = !isFalling;
 
@@ -272,13 +299,29 @@ public class MainCharacter extends Sprite {
 
             if (isAttacking_heavy || isAttacking_Normal || isAttacking_Flame) setAttackBound();
 
-            if (attackCount == 3)
-                attackCount = 0;
+            if ((isAttacking_heavy || isAttacking_Normal || isAttacking_Flame) && isJumping) isJumping = false;
+
+            if (isOnAir) isAllowedMove = true;
+
+            if (attackCount == 3) attackCount = 0;
+
+            if (isHanging || isPullUp) {
+                isAttacking_heavy = false;
+                isAttacking_Normal = false;
+                isAttacking_Flame = false;
+                isJumping = false;
+                isRolling = false;
+                isFalling = false;
+                isAllowedMove = false;
+            }
+
         }
     }
 
     public void inputHandle() {
         Gdx.input.setInputProcessor(new KeyUpHandle());
+
+        hangAndPullUpHandle();
 
         rollHandle();
 
@@ -291,6 +334,12 @@ public class MainCharacter extends Sprite {
         siteHandle();
 
         lookHandle();
+    }
+
+    public void hangAndPullUpHandle() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E) && isHanging) {
+            isPullUp = true;
+        }
     }
 
     public void rollHandle() {
@@ -313,6 +362,7 @@ public class MainCharacter extends Sprite {
 //        }
         if (isAllowedJump) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                isOnAir = true;
                 isJumping = true;
                 body.applyLinearImpulse(new Vector2(0, 4.4f), body.getWorldCenter(), true);
                 isAllowedJump = false;
@@ -327,16 +377,20 @@ public class MainCharacter extends Sprite {
     }
 
     public void movementHandle() {
-
-        if (canMove) if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D))
-            MainCharacter.isMoving = true;
+        if (isAllowedMove && !isTouchAirGround)
+            if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D))
+                MainCharacter.isMoving = true;
 
         if (isMoving) if (isTurningRight) velocity.set(4.3f, 0);
         else velocity.set(-4.3f, 0);
         else velocity.set(0, 0);
 
-        velocity.y = body.getLinearVelocity().y;
-        body.setLinearVelocity(velocity);
+        if (isHanging) body.setTransform(body.getPosition().x, yHang - 48 / Boot.PPM, 0);
+        else if (isPullUp) body.setTransform(xHang - 1 / Boot.PPM, yHang + 52 / Boot.PPM, 0);
+        else {
+            velocity.y = body.getLinearVelocity().y;
+            body.setLinearVelocity(velocity);
+        }
 
     }
 
@@ -366,10 +420,8 @@ public class MainCharacter extends Sprite {
         if (isLooking && stateTime >= 0.7f) {
             if (isLookingUp) GameScreen.camera.position.y += 4.5f / Boot.PPM;
             else GameScreen.camera.position.y -= 4.5f / Boot.PPM;
-            if (GameScreen.camera.position.y >= 282f / Boot.PPM)
-                GameScreen.camera.position.y = 282 / Boot.PPM;
-            else if (GameScreen.camera.position.y <= 138 / Boot.PPM)
-                GameScreen.camera.position.y = 138 / Boot.PPM;
+            if (GameScreen.camera.position.y >= 282f / Boot.PPM) GameScreen.camera.position.y = 282 / Boot.PPM;
+            else if (GameScreen.camera.position.y <= 138 / Boot.PPM) GameScreen.camera.position.y = 138 / Boot.PPM;
         }
 
         if (isReturn) {
@@ -402,7 +454,6 @@ public class MainCharacter extends Sprite {
     }
 
     public void setActionDuration(float deltaTime) {
-
         if (isAttacking_Flame) {
             if (actionDuration >= 1f) {
                 isAttacking_Flame = false;
@@ -431,6 +482,14 @@ public class MainCharacter extends Sprite {
         if (isRolling) {
             if (actionDuration >= 0.6f) {
                 isRolling = false;
+                actionDuration = 0;
+            }
+            actionDuration += deltaTime;
+        }
+
+        if (isPullUp) {
+            if (actionDuration >= 0.45f) {
+                isPullUp = false;
                 actionDuration = 0;
             }
             actionDuration += deltaTime;
@@ -514,6 +573,12 @@ public class MainCharacter extends Sprite {
             case ROLL:
                 region = roll.getKeyFrame(stateTime);
                 break;
+            case HANG:
+                region = hang.getKeyFrame(stateTime, true);
+                break;
+            case PULL_UP:
+                region = pullUp.getKeyFrame(stateTime);
+                break;
             default:
                 region = idle.getKeyFrame(stateTime, true);
                 break;
@@ -524,7 +589,6 @@ public class MainCharacter extends Sprite {
         } else if (isTurningRight && region.isFlipX()) {
             region.flip(true, false);
         }
-
 
         stateTime = currenState == previousState ? stateTime + deltaTime : 0;
         previousState = currenState;
@@ -546,6 +610,8 @@ public class MainCharacter extends Sprite {
         else if (isFalling) return STATE.FALL;
         else if (isDead) return STATE.DEAD;
         else if (isRolling) return STATE.ROLL;
+        else if (isHanging) return STATE.HANG;
+        else if (isPullUp) return STATE.PULL_UP;
         else return STATE.IDLE;
     }
 
@@ -568,8 +634,7 @@ public class MainCharacter extends Sprite {
     @Override
     public void draw(Batch batch) {
         super.draw(batch);
-        if (isBleeding && !isDead)
-            bleedingEffect.draw(batch);
+        if (isBleeding && !isDead) bleedingEffect.draw(batch);
     }
 
 }

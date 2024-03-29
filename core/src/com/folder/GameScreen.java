@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.*;
 import com.folder.Tool.CollisionHandle;
-import com.folder.Tool.CreateBody;
+import com.folder.Tool.CreateBodyFromMap;
 
 
 public class GameScreen implements Screen {
@@ -41,7 +41,7 @@ public class GameScreen implements Screen {
     private TextureAtlas AnimationTileSetAtlas;
 
     //Object
-    private CreateBody createBody;
+    private CreateBodyFromMap createBody;
     ObjectTest object;
     AnimationTileSet animationTileSet;
 
@@ -49,13 +49,12 @@ public class GameScreen implements Screen {
     Werewolves werewolves;
 
     public GameScreen() {
-
         world = new World(new Vector2(0, -10f), false);
 
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        //gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM , Boot.screenHeight / Boot.PPM , camera);
+        // gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM , Boot.screenHeight / Boot.PPM , camera);
         gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 1040 / Boot.PPM, Boot.screenHeight / Boot.PPM - 660 / Boot.PPM, camera);
         hud = new Status(batch);
 
@@ -73,8 +72,8 @@ public class GameScreen implements Screen {
         animationTileSet = new AnimationTileSet(this);
 
         player = new MainCharacter(this);
-        werewolves = new Werewolves(this);
-        createBody = new CreateBody(this);
+        //werewolves = new Werewolves(this);
+        createBody = new CreateBodyFromMap(this);
 
         world.setContactListener(new CollisionHandle());
     }
@@ -95,7 +94,7 @@ public class GameScreen implements Screen {
         mapRenderer.setView(camera);
 
         player.update(deltaTime);
-        werewolves.update(deltaTime);
+        //werewolves.update(deltaTime);
         animationTileSet.update(deltaTime);
     }
 
@@ -114,12 +113,12 @@ public class GameScreen implements Screen {
         batch.begin();
 
         player.draw(batch);
-        werewolves.draw(batch);
+        //werewolves.draw(batch);
         animationTileSet.draw(batch);
 
         batch.end();
 
-        debug.render(world, camera.combined);
+        //debug.render(world, camera.combined);
     }
 
 

@@ -22,7 +22,7 @@ public abstract class InteractiveObject {
 
         this.object = object;
 
-        rect = object.getRectangle();
+        this.rect = object.getRectangle();
 
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();
@@ -35,8 +35,7 @@ public abstract class InteractiveObject {
         shape.setAsBox(rect.getWidth() / 2 / Boot.PPM, rect.getHeight() / 2 / Boot.PPM);
         fixtureDef.shape = shape;
         fixture = body.createFixture(fixtureDef);
-
-
+        fixture.setUserData(this);
     }
 
     public void setCategory(short bit) {
@@ -44,4 +43,5 @@ public abstract class InteractiveObject {
         filter.categoryBits = bit;
         fixture.setFilterData(filter);
     }
+
 }

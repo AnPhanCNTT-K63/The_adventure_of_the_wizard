@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.*;
 import com.folder.Tool.CollisionHandle;
-import com.folder.Tool.CreateBodyFromMap;
+import com.folder.Tool.ObjectCreate;
 
 
 public class GameScreen implements Screen {
@@ -41,12 +41,11 @@ public class GameScreen implements Screen {
     private TextureAtlas AnimationTileSetAtlas;
 
     //Object
-    private CreateBodyFromMap createBody;
-    ObjectTest object;
-    AnimationTileSet animationTileSet;
+    private ObjectCreate object;
+    //ObjectTest objectTest;
 
     MainCharacter player;
-    Werewolves werewolves;
+
 
     public GameScreen() {
         world = new World(new Vector2(0, -10f), false);
@@ -54,7 +53,7 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        // gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM , Boot.screenHeight / Boot.PPM , camera);
+        //gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM, Boot.screenHeight / Boot.PPM, camera);
         gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 1040 / Boot.PPM, Boot.screenHeight / Boot.PPM - 660 / Boot.PPM, camera);
         hud = new Status(batch);
 
@@ -69,11 +68,11 @@ public class GameScreen implements Screen {
         AnimationTileSetAtlas = new TextureAtlas("AnimationTileset.atlas");
 
         // object = new ObjectTest(this);
-        animationTileSet = new AnimationTileSet(this);
+
 
         player = new MainCharacter(this);
-        //werewolves = new Werewolves(this);
-        createBody = new CreateBodyFromMap(this);
+
+        object = new ObjectCreate(this);
 
         world.setContactListener(new CollisionHandle());
     }
@@ -94,8 +93,13 @@ public class GameScreen implements Screen {
         mapRenderer.setView(camera);
 
         player.update(deltaTime);
-        //werewolves.update(deltaTime);
-        animationTileSet.update(deltaTime);
+
+        for (Enemy enemy : object.getEnemyList())
+            enemy.update(deltaTime);
+
+        for (AnimationTileSet animationTileSet : object.getAnimationTileSet())
+            animationTileSet.update(deltaTime);
+
     }
 
     @Override
@@ -113,8 +117,12 @@ public class GameScreen implements Screen {
         batch.begin();
 
         player.draw(batch);
-        //werewolves.draw(batch);
-        animationTileSet.draw(batch);
+
+        for (Enemy enemy : object.getEnemyList())
+            enemy.draw(batch);
+
+        for (AnimationTileSet animationTileSet : object.getAnimationTileSet())
+            animationTileSet.draw(batch);
 
         batch.end();
 

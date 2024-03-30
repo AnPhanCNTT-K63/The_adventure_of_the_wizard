@@ -28,21 +28,21 @@ public class Werewolves extends Enemy {
     Animation<TextureRegion> Hurt;
     Animation<TextureRegion> Dead;
 
-    public static float stateTime;
+    public float stateTime;
     float actionDuration;
 
     boolean isWalking;
     boolean isAttacking;
-    public static boolean isChasing;
+    boolean isChasing;
     boolean canMove;
     boolean isDead;
     boolean setToDead;
     boolean isExist;
     boolean isCreateFixture;
-    public static boolean isHurt;
-    public static boolean isBleeding;
-    public static boolean isHeavyHurt;
-    public static boolean isReverse;
+    public boolean isHurt;
+    public boolean isBleeding;
+    public boolean isHeavyHurt;
+    public boolean isReverse;
 
 
     boolean isTurningRight;
@@ -51,8 +51,8 @@ public class Werewolves extends Enemy {
 
     int heart;
 
-    public Werewolves(GameScreen screen) {
-        super(screen);
+    public Werewolves(GameScreen screen, float posX, float posY) {
+        super(screen, posX, posY);
         fixtures = new LinkedList<>();
 
         currentState = previousState = STATE.WALK;
@@ -104,16 +104,15 @@ public class Werewolves extends Enemy {
             frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("Dead"), i * 128, 0, 128, 128));
         Dead = new Animation<TextureRegion>(1f, frames);
         frames.clear();
-
     }
 
     @Override
     public void setUpBody() {
-        setBounds(0, 0, 128 / Boot.PPM, 128 / Boot.PPM);
+        setBounds(getX(), getY(), 128 / Boot.PPM, 128 / Boot.PPM);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(Boot.screenWidth / 2 / Boot.PPM + 400 / Boot.PPM / Boot.PPM, Boot.screenHeight / 2 / Boot.PPM - 300 / Boot.PPM);
+        bodyDef.position.set(getX(), getY());
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
@@ -124,7 +123,7 @@ public class Werewolves extends Enemy {
         fixtureDef.filter.categoryBits = Boot.ENEMY_BIT;
         fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ATTACK_BIT | Boot.CHARACTER_BIT | Boot.WALL_BIT;
 
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData(this);
         shape.dispose();
     }
 
@@ -184,7 +183,6 @@ public class Werewolves extends Enemy {
             isAttacking = false;
             canMove = false;
         }
-
 
         destroyBody();
 
@@ -297,7 +295,7 @@ public class Werewolves extends Enemy {
         setRegion(getStatus(deltaTime));
     }
 
-    public static void beDamaged() {
+    public void beDamaged() {
         isHurt = true;
         isBleeding = true;
     }
@@ -339,6 +337,10 @@ public class Werewolves extends Enemy {
     public void draw(Batch batch) {
         if (isExist) super.draw(batch);
         if (isBleeding) bleedingEffect.draw(batch);
+    }
+
+    public void reverseVelocity() {
+        isReverse = true;
     }
 
 }

@@ -28,7 +28,10 @@ public class CollisionHandle implements ContactListener {
                 MainCharacter.isTouchAirGround = true;
                 break;
             case Boot.ATTACK_BIT | Boot.ENEMY_BIT:
-                Werewolves.beDamaged();
+                if (fixA.getFilterData().categoryBits == Boot.ENEMY_BIT)
+                    ((Werewolves) fixA.getUserData()).beDamaged();
+                else if (fixB.getFilterData().categoryBits == Boot.ENEMY_BIT)
+                    ((Werewolves) fixB.getUserData()).beDamaged();
                 break;
             case Boot.ENEMY_ATTACK_BIT | Boot.CHARACTER_BIT:
                 MainCharacter.beDamaged();
@@ -37,17 +40,17 @@ public class CollisionHandle implements ContactListener {
             case Boot.CHARACTER_BIT | Boot.WALL_BIT:
                 break;
             case Boot.ENEMY_BIT | Boot.WALL_BIT:
-                Werewolves.isReverse = true;
+                if (fixA.getFilterData().categoryBits == Boot.ENEMY_BIT)
+                    ((Werewolves) fixA.getUserData()).reverseVelocity();
+                else if (fixB.getFilterData().categoryBits == Boot.ENEMY_BIT)
+                    ((Werewolves) fixB.getUserData()).reverseVelocity();
                 break;
             case Boot.CHARACTER_BIT | Boot.HANG_POINT_BIT:
-                if (fixA.getFilterData().categoryBits == Boot.HANG_POINT_BIT) {
-                    MainCharacter.isHanging = true;
+                if (fixA.getFilterData().categoryBits == Boot.HANG_POINT_BIT)
                     ((HangPoint) fixA.getUserData()).setPositionHang();
-                } else {
-                    MainCharacter.isHanging = true;
+                else
                     ((HangPoint) fixB.getUserData()).setPositionHang();
-                }
-
+                MainCharacter.isHanging = true;
                 break;
         }
     }

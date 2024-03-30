@@ -11,13 +11,15 @@ public abstract class Enemy extends Sprite {
     protected Body body;
     protected Vector2 velocity;
 
-    public Enemy(GameScreen screen) {
+    public Enemy(GameScreen screen, float posX, float posY) {
         world = screen.getWorld();
         velocity = new Vector2(0, 0);
+        setPosition(posX, posY);
         setUpBody();
     }
 
-    public abstract void setUpBody();
+    abstract void setUpBody();
+
     public abstract void update(float deltaTime);
 
 }

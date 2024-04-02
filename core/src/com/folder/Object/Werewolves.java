@@ -295,6 +295,7 @@ public class Werewolves extends Enemy {
         setRegion(getStatus(deltaTime));
     }
 
+    @Override
     public void beDamaged() {
         isHurt = true;
         isBleeding = true;
@@ -339,6 +340,7 @@ public class Werewolves extends Enemy {
         if (isBleeding) bleedingEffect.draw(batch);
     }
 
+    @Override
     public void reverseVelocity() {
         isReverse = true;
     }

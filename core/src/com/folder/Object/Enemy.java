@@ -20,6 +20,10 @@ public abstract class Enemy extends Sprite {
 
     abstract void setUpBody();
 
+    public abstract void beDamaged();
+
+    public abstract void reverseVelocity();
+
     public abstract void update(float deltaTime);
 
 }

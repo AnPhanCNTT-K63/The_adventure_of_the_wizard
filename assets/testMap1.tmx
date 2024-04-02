@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="300" height="68" tilewidth="16" tileheight="16" infinite="0" nextlayerid="24" nextobjectid="153">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="300" height="68" tilewidth="16" tileheight="16" infinite="0" nextlayerid="29" nextobjectid="211">
  <tileset firstgid="1" name="Background_night1" tilewidth="16" tileheight="16" tilecount="3200" columns="80">
   <image source="Map_1/!PNG/Background_night1.png" width="1280" height="640"/>
  </tileset>
@@ -897,28 +897,53 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,59548,59549,59550,59551,59552,59553,59554,59555,59556,59557,59558,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="9" name="Ground">
+ <objectgroup id="9" name="12_Ground">
   <object id="5" x="0" y="1056" width="1278.67" height="30.6667"/>
   <object id="126" x="545" y="927.25" width="30.25" height="8.5"/>
   <object id="127" x="579.5" y="925.25" width="58.75" height="12"/>
   <object id="138" x="349.125" y="926.25" width="97.125" height="10.5"/>
  </objectgroup>
- <objectgroup id="17" name="Wall">
+ <objectgroup id="17" name="13_Wall">
   <object id="70" x="1199.33" y="902" width="22" height="149.333"/>
   <object id="71" x="117.333" y="924.667" width="22" height="127.333"/>
  </objectgroup>
- <objectgroup id="20" name="TouchPointOnAir">
+ <objectgroup id="20" name="14_TouchPointOnAir">
   <object id="118" x="1197.36" y="909.182" width="1.90909" height="66.4545"/>
  </objectgroup>
- <objectgroup id="21" name="HangPoint">
+ <objectgroup id="21" name="15_HangPoint">
   <object id="129" x="639.938" y="927.625" width="0.5" height="7.0625"/>
   <object id="137" x="347.875" y="929" width="0.875" height="5.375"/>
  </objectgroup>
- <objectgroup id="22" name="Werewolves">
+ <objectgroup id="22" name="16_Werewolves">
   <object id="143" x="1032" y="970.5"/>
  </objectgroup>
- <objectgroup id="23" name="TreeType1">
-  <object id="150" x="10" y="1078"/>
-  <object id="152" x="790" y="1076"/>
+ <objectgroup id="23" name="17_TreeType1">
+  <object id="160" x="10.3333" y="1088"/>
+  <object id="161" x="796.333" y="1086.67"/>
+ </objectgroup>
+ <objectgroup id="24" name="18_TreeType2">
+  <object id="159" x="264" y="1087"/>
+ </objectgroup>
+ <objectgroup id="25" name="19_FlowerType1">
+  <object id="181" x="479.5" y="1055.25"/>
+  <object id="182" x="528" y="1056"/>
+  <object id="184" x="559.75" y="928.5"/>
+  <object id="188" x="607.5" y="925.5"/>
+  <object id="189" x="367.75" y="925"/>
+  <object id="197" x="812.75" y="1055.5"/>
+  <object id="198" x="742" y="1056.25"/>
+ </objectgroup>
+ <objectgroup id="26" name="20_FloweType2">
+  <object id="190" x="583" y="1055.5"/>
+  <object id="191" x="611.5" y="1055.75"/>
+  <object id="192" x="631" y="925"/>
+  <object id="193" x="502.5" y="1055.25"/>
+  <object id="194" x="1170.75" y="1056"/>
+  <object id="195" x="1104" y="1055.75"/>
+  <object id="196" x="771.5" y="1055.75"/>
+ </objectgroup>
+ <objectgroup id="28" name="21_Brush">
+  <object id="209" x="355" y="1087"/>
+  <object id="210" x="678.333" y="1087.33"/>
  </objectgroup>
 </map>

@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.folder.HUD.Status;
 import com.folder.Object.*;
+import com.folder.Tool.AnimationTileSetCreate;
 import com.folder.Tool.CollisionHandle;
 import com.folder.Tool.ObjectCreate;
 
@@ -39,6 +40,7 @@ public class GameScreen implements Screen {
     private TextureAtlas atlas;
     private TextureAtlas enemyAtlas;
     private TextureAtlas AnimationTileSetAtlas;
+    private TextureAtlas bossAtlas;
 
     //Object
     private ObjectCreate object;
@@ -58,7 +60,7 @@ public class GameScreen implements Screen {
         hud = new Status(batch);
 
         mapLoader = new TmxMapLoader();
-        tiledMap = mapLoader.load("testMap1.tmx");
+        tiledMap = mapLoader.load("bossMap.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / Boot.PPM);
 
         debug = new Box2DDebugRenderer();
@@ -66,6 +68,7 @@ public class GameScreen implements Screen {
         atlas = new TextureAtlas("wizard.atlas");
         enemyAtlas = new TextureAtlas("werewolves.atlas");
         AnimationTileSetAtlas = new TextureAtlas("AnimationTileset.atlas");
+        bossAtlas = new TextureAtlas("ElementEnemy.atlas");
 
         // object = new ObjectTest(this);
 
@@ -97,7 +100,7 @@ public class GameScreen implements Screen {
         for (Enemy enemy : object.getEnemyList())
             enemy.update(deltaTime);
 
-        for (AnimationTileSet animationTileSet : object.getAnimationTileSet())
+        for (AnimationTileSetCreate animationTileSet : object.getAnimationTileSet())
             animationTileSet.update(deltaTime);
 
     }
@@ -121,7 +124,7 @@ public class GameScreen implements Screen {
         for (Enemy enemy : object.getEnemyList())
             enemy.draw(batch);
 
-        for (AnimationTileSet animationTileSet : object.getAnimationTileSet())
+        for (AnimationTileSetCreate animationTileSet : object.getAnimationTileSet())
             animationTileSet.draw(batch);
 
         batch.end();
@@ -148,6 +151,10 @@ public class GameScreen implements Screen {
 
     public TextureAtlas getAnimationTileSetAtlas() {
         return AnimationTileSetAtlas;
+    }
+
+    public TextureAtlas getBossAtlas() {
+        return bossAtlas;
     }
 
     @Override
@@ -181,6 +188,10 @@ public class GameScreen implements Screen {
     @Override
     public void hide() {
 
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 
 }

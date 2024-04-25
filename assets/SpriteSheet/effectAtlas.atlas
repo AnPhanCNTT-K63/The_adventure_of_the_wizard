@@ -1,0 +1,13 @@
+effectAtlas.png
+size:8192,512
+repeat:none
+Comet
+bounds:4096,256,2048,256
+Explosion
+bounds:6144,312,720,72
+FireShield
+bounds:4096,128,1024,128
+WaterTrapBall
+bounds:6144,384,2048,128
+bleed
+bounds:0,0,4096,512

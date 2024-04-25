@@ -1,0 +1,17 @@
+AnimationTileset.png
+size:2048,1024
+repeat:none
+Bush
+bounds:1024,192,512,288
+Flower1
+bounds:1536,416,128,64
+Flower2
+bounds:1024,128,128,64
+Grass
+bounds:128,64,128,64
+Plant
+bounds:0,0,128,128
+Tree1
+bounds:0,128,1024,864
+Tree2
+bounds:1024,480,960,512

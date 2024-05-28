@@ -14,6 +14,7 @@ import com.folder.Object.MagicEffect.Effect.BleedingEffect;
 import com.folder.Object.MagicEffect.MagicEffect;
 import com.folder.Object.MainCharacter;
 import com.folder.Screen.GameScreen;
+import com.folder.UI.Status;
 
 import java.util.LinkedList;
 
@@ -337,6 +338,7 @@ public class Werewolves extends Enemy {
         if (setToDead && !isDead) {
             world.destroyBody(body);
             isDead = true;
+            Status.addScore(50);
         }
     }
 

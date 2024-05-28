@@ -3,6 +3,7 @@ package com.folder.Screen;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -44,7 +45,6 @@ public class GameScreen implements Screen {
     private TextureAtlas bossAtlas;
     private TextureAtlas effectAtlas;
 
-
     //Object
     private ObjectCreate object;
     //ObjectTest objectTest;
@@ -63,7 +63,6 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         //gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM, Boot.screenHeight / Boot.PPM, camera);
         gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 1040 / Boot.PPM, Boot.screenHeight / Boot.PPM - 660 / Boot.PPM, camera);
-        hud = new Status(batch);
         mapLoader = new TmxMapLoader();
         tiledMap = mapLoader.load("Map1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / Boot.PPM);
@@ -83,9 +82,11 @@ public class GameScreen implements Screen {
 
         object = new ObjectCreate(this);
 
+        hud = new Status(batch, this);
+
         world.setContactListener(new CollisionHandle());
 
-       // lightTest = new LightHandle(this);
+        // lightTest = new LightHandle(this);
 
     }
 
@@ -94,7 +95,6 @@ public class GameScreen implements Screen {
     }
 
     public void update(float deltaTime) {
-        Status.addScore(50);
 
         world.step(1 / 60f, 6, 2);
 
@@ -115,6 +115,8 @@ public class GameScreen implements Screen {
 
         mapRenderer.setView(camera);
 
+        hud.update();
+
         player.update(deltaTime);
 
         for (Enemy enemy : object.getEnemyList())
@@ -132,15 +134,16 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         mapRenderer.render();
-        hud.stage.draw();
 
         if (MenuHandle.isMenu) {
             boot.setScreen(new MenuScreen(boot));
             MenuHandle.isMenu = false;
         }
-
+        hud.getStage().draw();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+
 
         player.draw(batch);
 
@@ -153,7 +156,7 @@ public class GameScreen implements Screen {
         batch.end();
 //        lightTest.getRayHandler().setCombinedMatrix(camera);
 //        lightTest.getRayHandler().updateAndRender();
-         debug.render(world, camera.combined);
+        debug.render(world, camera.combined);
     }
 
 

@@ -20,6 +20,7 @@ public abstract class Enemy extends Sprite {
     protected float hitCount;
     protected Light enemyLight;
     protected RayHandler rayHandler;
+    public static float count;
 
     public Enemy(GameScreen screen, float posX, float posY) {
         world = screen.getWorld();
@@ -27,6 +28,7 @@ public abstract class Enemy extends Sprite {
         hitCount = 0;
         setPosition(posX, posY);
         setUpBody();
+        count += 1;
 
         rayHandler = new RayHandler(world);
         rayHandler.setAmbientLight(0, 0, 0, 0.2f);

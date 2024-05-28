@@ -23,7 +23,7 @@ public class BossEarthRangeAttack extends Sprite {
     private Array<TextureRegion> frames;
 
     private float stateTime;
-    public float actionDuration;
+    private float actionDuration;
 
     private float posX;
     private float posY;
@@ -32,8 +32,8 @@ public class BossEarthRangeAttack extends Sprite {
     private short categoryBit;
 
     private boolean destroy;
-    public boolean setToDestroy;
-    public boolean ready;
+    private boolean setToDestroy;
+    private boolean ready;
 
     public BossEarthRangeAttack(GameScreen screen, float posX, float posY, short categoryBit) {
         world = screen.getWorld();
@@ -96,6 +96,22 @@ public class BossEarthRangeAttack extends Sprite {
             world.destroyBody(body);
             destroy = true;
         }
+    }
+
+    public void setReady(boolean bool) {
+        ready = bool;
+    }
+
+    public float getActionDuration() {
+        return actionDuration;
+    }
+
+    public void setActionDuration(float time) {
+        actionDuration = time;
+    }
+
+    public void updateActionDuration(float time){
+        actionDuration += time;
     }
 
 }

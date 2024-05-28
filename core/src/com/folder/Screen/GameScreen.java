@@ -15,17 +15,15 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.folder.Boot;
-import com.folder.HUD.Status;
+import com.folder.UI.Status;
 
 import com.folder.Object.*;
 import com.folder.Object.Enemy.Enemy;
 import com.folder.Tool.*;
 
-import java.io.PrintStream;
-
 public class GameScreen implements Screen {
     private Status hud;
-    public SpriteBatch batch;
+    private SpriteBatch batch;
 
     public static OrthographicCamera camera;
     private Viewport gamePort;
@@ -41,6 +39,7 @@ public class GameScreen implements Screen {
 
     private TextureAtlas atlas;
     private TextureAtlas enemyAtlas;
+    private TextureAtlas hellDogAtlas;
     private TextureAtlas AnimationTileSetAtlas;
     private TextureAtlas bossAtlas;
     private TextureAtlas effectAtlas;
@@ -52,6 +51,9 @@ public class GameScreen implements Screen {
 
     private MainCharacter player;
 
+    public static GameScreen INSTANCE;
+
+    LightHandle lightTest;
 
     public GameScreen(Boot boot) {
         world = new World(new Vector2(0, -10f), false);
@@ -63,18 +65,19 @@ public class GameScreen implements Screen {
         gamePort = new StretchViewport(Boot.screenWidth / Boot.PPM - 1040 / Boot.PPM, Boot.screenHeight / Boot.PPM - 660 / Boot.PPM, camera);
         hud = new Status(batch);
         mapLoader = new TmxMapLoader();
-        tiledMap = mapLoader.load("Map2.tmx");
+        tiledMap = mapLoader.load("Map1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / Boot.PPM);
 
         debug = new Box2DDebugRenderer();
 
         atlas = new TextureAtlas("SpriteSheet/wizard.atlas");
         enemyAtlas = new TextureAtlas("SpriteSheet/werewolves.atlas");
+        hellDogAtlas = new TextureAtlas("SpriteSheet/HellDog.atlas");
         AnimationTileSetAtlas = new TextureAtlas("SpriteSheet/AnimationTileset.atlas");
         bossAtlas = new TextureAtlas("SpriteSheet/ElementEnemy.atlas");
         effectAtlas = new TextureAtlas("SpriteSheet/effectAtlas.atlas");
 
-        // object = new ObjectTest(this);
+        // object = new ObjectTest(this);dddd
 
         player = new MainCharacter(this);
 
@@ -82,7 +85,12 @@ public class GameScreen implements Screen {
 
         world.setContactListener(new CollisionHandle());
 
+       // lightTest = new LightHandle(this);
 
+    }
+
+    public static GameScreen screen() {
+        return INSTANCE;
     }
 
     public void update(float deltaTime) {
@@ -92,8 +100,16 @@ public class GameScreen implements Screen {
 
         camera.position.x = player.getBody().getPosition().x;
 
-        if (camera.position.x <= 440 / Boot.PPM)
-            camera.position.x = 440 / Boot.PPM;
+        if (!MainCharacter.isInMap2)
+            if (camera.position.x <= 440 / Boot.PPM)
+                camera.position.x = 440 / Boot.PPM;
+            else if (camera.position.x >= 830 / Boot.PPM)
+                camera.position.x = 830 / Boot.PPM;
+        if (MainCharacter.isInMap2)
+            if (camera.position.x <= 440 / Boot.PPM)
+                camera.position.x = 440 / Boot.PPM;
+            else if (camera.position.x >= 2111 / Boot.PPM)
+                camera.position.x = 2111 / Boot.PPM;
 
         camera.update();
 
@@ -135,7 +151,9 @@ public class GameScreen implements Screen {
             animationTileSet.draw(batch);
 
         batch.end();
-        debug.render(world, camera.combined);
+//        lightTest.getRayHandler().setCombinedMatrix(camera);
+//        lightTest.getRayHandler().updateAndRender();
+         debug.render(world, camera.combined);
     }
 
 
@@ -153,6 +171,10 @@ public class GameScreen implements Screen {
 
     public TextureAtlas getEnemyAtlas() {
         return enemyAtlas;
+    }
+
+    public TextureAtlas getHellDogAtlas() {
+        return hellDogAtlas;
     }
 
     public TextureAtlas getAnimationTileSetAtlas() {
@@ -211,6 +233,10 @@ public class GameScreen implements Screen {
 
     public OrthographicCamera getCamera() {
         return camera;
+    }
+
+    public Viewport getViewport() {
+        return gamePort;
     }
 
 }

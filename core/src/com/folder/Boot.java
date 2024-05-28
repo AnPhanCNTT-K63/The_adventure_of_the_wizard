@@ -21,6 +21,7 @@ public class Boot extends Game {
     public static final short TOUCH_POINT_ON_AIR = 64;
     public static final short HANG_POINT_BIT = 128;
     public static final short LADDER_POINT_BIT = 256;
+    public static final short DOOR_BIT = 512;
     public static final short OBJECT_TEST_BIT = 12;
 
     public SpriteBatch batch;

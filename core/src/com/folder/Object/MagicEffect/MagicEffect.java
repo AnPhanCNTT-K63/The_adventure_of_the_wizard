@@ -8,9 +8,9 @@ import com.folder.Screen.GameScreen;
 
 
 public abstract class MagicEffect extends Sprite {
-     protected Animation<TextureRegion> animation;
+    protected Animation<TextureRegion> animation;
     protected float stateTime;
-    public float actionDuration;
+    protected float actionDuration;
 
     public MagicEffect(GameScreen screen) {
         actionDuration = 0;
@@ -18,4 +18,16 @@ public abstract class MagicEffect extends Sprite {
     }
 
     abstract public void update(float deltaTime, float posX, float posY);
+
+    public float getActionDuration() {
+        return actionDuration;
+    }
+
+    public void setActionDuration(float time) {
+        actionDuration = time;
+    }
+
+    public void updateActionDuration(float time) {
+        actionDuration += time;
+    }
 }

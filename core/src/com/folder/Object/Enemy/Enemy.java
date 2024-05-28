@@ -1,10 +1,15 @@
 package com.folder.Object.Enemy;
 
+import box2dLight.Light;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.folder.Boot;
+import com.folder.Object.MainCharacter;
 import com.folder.Screen.GameScreen;
 
 
@@ -13,6 +18,8 @@ public abstract class Enemy extends Sprite {
     protected Body body;
     protected Vector2 velocity;
     protected float hitCount;
+    protected Light enemyLight;
+    protected RayHandler rayHandler;
 
     public Enemy(GameScreen screen, float posX, float posY) {
         world = screen.getWorld();
@@ -20,6 +27,12 @@ public abstract class Enemy extends Sprite {
         hitCount = 0;
         setPosition(posX, posY);
         setUpBody();
+
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0, 0, 0, 0.2f);
+
+        enemyLight = new PointLight(rayHandler, 64, new Color(1, 1, 1, 0.7f), 4, body.getPosition().x, body.getPosition().y);
+        enemyLight.attachToBody(body);
     }
 
     protected abstract void setUpBody();

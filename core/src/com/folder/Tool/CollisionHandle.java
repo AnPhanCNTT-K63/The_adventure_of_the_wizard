@@ -26,14 +26,14 @@ public class CollisionHandle implements ContactListener {
                 MainCharacter.isFalling = true;
                 MainCharacter.isTouchAirGround = true;
                 break;
-            case Boot.CHARACTER_BIT | Boot.ENEMY_BIT:
-                MainCharacter.beDamaged();
-                MainCharacter.isHeavyHurt = true;
-                if (fixA.getFilterData().categoryBits == Boot.CHARACTER_BIT)
-                    ((MainCharacter) fixA.getUserData()).collideEnemy((Enemy) fixB.getUserData());
-                else
-                    ((MainCharacter) fixB.getUserData()).collideEnemy((Enemy) fixA.getUserData());
-                break;
+//            case Boot.CHARACTER_BIT | Boot.ENEMY_BIT:
+//                MainCharacter.beDamaged();
+//                //MainCharacter.isHeavyHurt = true;
+//                if (fixA.getFilterData().categoryBits == Boot.CHARACTER_BIT)
+//                    ((MainCharacter) fixA.getUserData()).collideEnemy((Enemy) fixB.getUserData());
+//                else
+//                    ((MainCharacter) fixB.getUserData()).collideEnemy((Enemy) fixA.getUserData());
+//                break;
             case Boot.ATTACK_BIT | Boot.ENEMY_BIT:
                 if (fixA.getFilterData().categoryBits == Boot.ENEMY_BIT) {
                     ((Enemy) fixA.getUserData()).beDamaged();
@@ -44,9 +44,7 @@ public class CollisionHandle implements ContactListener {
                 }
                 break;
             case Boot.ENEMY_ATTACK_BIT | Boot.CHARACTER_BIT:
-                System.out.println("ouch");
                 MainCharacter.beDamaged();
-                MainCharacter.isHeavyHurt = true;
                 if (fixA.getFilterData().categoryBits == Boot.CHARACTER_BIT)
                     ((MainCharacter) fixA.getUserData()).beStrongPushed((Enemy) fixB.getUserData());
                 else
@@ -69,6 +67,9 @@ public class CollisionHandle implements ContactListener {
                 break;
             case Boot.CHARACTER_BIT | Boot.LADDER_POINT_BIT:
                 MainCharacter.isClingLadder = true;
+                break;
+            case Boot.CHARACTER_BIT | Boot.DOOR_BIT:
+                MainCharacter.isAllowedNextMap = true;
                 break;
         }
     }

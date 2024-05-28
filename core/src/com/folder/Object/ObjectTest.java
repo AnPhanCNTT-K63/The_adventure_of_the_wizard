@@ -12,7 +12,7 @@ public class ObjectTest {
     private TiledMap tiledMap;
 
     private World world;
-    public static Body body;
+    private Body body;
 
     public ObjectTest(GameScreen screen) {
         tiledMap = screen.getMap();

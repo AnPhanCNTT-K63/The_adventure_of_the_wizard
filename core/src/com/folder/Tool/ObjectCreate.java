@@ -6,11 +6,13 @@ import com.folder.AnimationTileSet.*;
 import com.folder.Boot;
 
 import com.folder.Object.Enemy.Boss.BossElementEarth;
+import com.folder.Object.Enemy.Creep.HellDog;
 import com.folder.Object.Enemy.Creep.Werewolves;
 import com.folder.Object.Enemy.Enemy;
 import com.folder.Object.InteractiveObject.*;
 import com.folder.Object.MainCharacter;
 import com.folder.Screen.GameScreen;
+import jdk.javadoc.internal.doclets.toolkit.taglets.snippet.Style;
 
 import java.util.LinkedList;
 
@@ -19,19 +21,20 @@ public class ObjectCreate {
     private GameScreen screen;
 
     private LinkedList<Werewolves> werewolves;
+    private LinkedList<HellDog> hellDogs;
     private LinkedList<BossElementEarth> bossElementEarths;
     private LinkedList<Ground> grounds;
     private LinkedList<Wall> walls;
     private LinkedList<TouchPointOnAir> touchPointOnAirs;
     private LinkedList<HangPoint> hangPoints;
     private LinkedList<Ladder> ladders;
+    private LinkedList<Door> doors;
 
     private LinkedList<TreeType1> treeType1s;
     private LinkedList<TreeType2> treeType2s;
     private LinkedList<FlowerType1> flowerType1s;
     private LinkedList<FlowerType2> flowerType2s;
     private LinkedList<Brush> brushes;
-
 
     public ObjectCreate(GameScreen screen) {
         this.screen = screen;
@@ -60,9 +63,17 @@ public class ObjectCreate {
         for (RectangleMapObject object : map.getLayers().get(23).getObjects().getByType(RectangleMapObject.class))
             ladders.add(new Ladder(screen, object));
 
+        doors = new LinkedList<>();
+        for (RectangleMapObject object : map.getLayers().get(24).getObjects().getByType(RectangleMapObject.class))
+            doors.add(new Door(screen, object));
+
         werewolves = new LinkedList<>();
         for (RectangleMapObject object : map.getLayers().get(16).getObjects().getByType(RectangleMapObject.class))
             werewolves.add(new Werewolves(screen, object.getRectangle().x / Boot.PPM, object.getRectangle().y / Boot.PPM));
+
+        hellDogs = new LinkedList<>();
+        for (RectangleMapObject object : map.getLayers().get(25).getObjects().getByType(RectangleMapObject.class))
+            hellDogs.add(new HellDog(screen, object.getRectangle().x / Boot.PPM, object.getRectangle().y / Boot.PPM));
 
         treeType1s = new LinkedList<>();
         for (RectangleMapObject object : map.getLayers().get(17).getObjects().getByType(RectangleMapObject.class))
@@ -84,7 +95,6 @@ public class ObjectCreate {
         for (RectangleMapObject object : map.getLayers().get(21).getObjects().getByType(RectangleMapObject.class))
             brushes.add(new Brush(screen, object.getRectangle().x / Boot.PPM, object.getRectangle().y / Boot.PPM));
 
-
         bossElementEarths = new LinkedList<>();
         for (RectangleMapObject object : map.getLayers().get(22).getObjects().getByType(RectangleMapObject.class))
             bossElementEarths.add(new BossElementEarth(screen, object.getRectangle().x / Boot.PPM, object.getRectangle().y / Boot.PPM));
@@ -95,6 +105,7 @@ public class ObjectCreate {
         LinkedList<Enemy> enemies = new LinkedList<>();
         enemies.addAll(werewolves);
         enemies.addAll(bossElementEarths);
+        enemies.addAll(hellDogs);
         return enemies;
     }
 
@@ -117,6 +128,10 @@ public class ObjectCreate {
             wolf.destroyWhenNextMap();
         werewolves.clear();
 
+        for (HellDog hellDog : hellDogs)
+            hellDog.destroyWhenNextMap();
+        hellDogs.clear();
+
         for (Ground ground : grounds)
             ground.destroyBody();
         grounds.clear();
@@ -132,6 +147,10 @@ public class ObjectCreate {
         for (Ladder ladder : ladders)
             ladder.destroyBody();
         ladders.clear();
+
+        for (Door door : doors)
+            door.destroyBody();
+        doors.clear();
 
         for (HangPoint hangPoint : hangPoints)
             hangPoint.destroyBody();

@@ -1,6 +1,5 @@
 package com.folder.Object.Enemy.Creep;
 
-import box2dLight.Light;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,7 +16,7 @@ import com.folder.Screen.GameScreen;
 
 import java.util.LinkedList;
 
-public class Werewolves extends Enemy {
+public class HellDog extends Enemy {
     enum STATE {WALK, ATTACK, RUN, HURT, DEAD}
 
     private STATE currentState;
@@ -48,13 +47,14 @@ public class Werewolves extends Enemy {
     private boolean isHeavyHurt;
     private boolean isReverse;
 
+
     private boolean isTurningRight;
 
     private MagicEffect bleedingEffect;
 
     private int heart;
 
-    public Werewolves(GameScreen screen, float posX, float posY) {
+    public HellDog(GameScreen screen, float posX, float posY) {
         super(screen, posX, posY);
         fixtures = new LinkedList<>();
 
@@ -83,29 +83,29 @@ public class Werewolves extends Enemy {
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
-        for (int i = 0; i < 11; i++)
-            frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("walk"), i * 128, 0, 128, 128));
+        for (int i = 0; i < 9; i++)
+            frames.add(new TextureRegion(screen.getHellDogAtlas().findRegion("Walk"), i * 128, 0, 128, 128));
         Walk = new Animation<TextureRegion>(1 / 11f, frames);
         frames.clear();
 
-        for (int i = 0; i < 9; i++)
-            frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("Run"), i * 128, 0, 128, 128));
+        for (int i = 0; i < 6; i++)
+            frames.add(new TextureRegion(screen.getHellDogAtlas().findRegion("Run"), i * 128, 0, 128, 128));
         Chase = new Animation<TextureRegion>(1 / 9f, frames);
         frames.clear();
 
-        for (int i = 0; i < 4; i++)
-            frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("Attack2"), i * 128, 0, 128, 128));
-        Attack = new Animation<TextureRegion>(1 / 4f, frames);
+        for (int i = 0; i < 6; i++)
+            frames.add(new TextureRegion(screen.getHellDogAtlas().findRegion("Attack1"), i * 128, 0, 128, 128));
+        Attack = new Animation<TextureRegion>(1 / 8f, frames);
         frames.clear();
 
-        for (int i = 0; i < 2; i++)
-            frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("Hurt"), i * 128, 0, 128, 128));
+        for (int i = 0; i < 3; i++)
+            frames.add(new TextureRegion(screen.getHellDogAtlas().findRegion("Hurt"), i * 128, 0, 128, 128));
         Hurt = new Animation<TextureRegion>(1 / 3f, frames);
         frames.clear();
 
-        for (int i = 0; i < 2; i++)
-            frames.add(new TextureRegion(screen.getEnemyAtlas().findRegion("Dead"), i * 128, 0, 128, 128));
-        Dead = new Animation<TextureRegion>(1f, frames);
+        for (int i = 0; i < 5; i++)
+            frames.add(new TextureRegion(screen.getHellDogAtlas().findRegion("Dead"), i * 128, 0, 128, 128));
+        Dead = new Animation<TextureRegion>(0.5f, frames);
         frames.clear();
     }
 

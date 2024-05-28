@@ -24,7 +24,7 @@ public class BossElementEarth extends Enemy {
     private STATE currentState;
     private STATE previousState;
 
-    LinkedList<Fixture> fixtures;
+    private LinkedList<Fixture> fixtures;
 
 
     private Animation<TextureRegion> Walk;
@@ -35,8 +35,8 @@ public class BossElementEarth extends Enemy {
     private Animation<TextureRegion> skill_1;
     private Animation<TextureRegion> skill_2;
 
-    public float stateTime;
-    float actionDuration;
+    private float stateTime;
+    private float actionDuration;
 
     private boolean isWalking;
     private boolean isAttacking;
@@ -63,11 +63,14 @@ public class BossElementEarth extends Enemy {
     private MagicEffect waterTrapBall;
     private BossEarthRangeAttack rangeAttack;
 
-    int heart;
+    private GameScreen screen;
+
+    private int heart;
 
     public BossElementEarth(GameScreen screen, float posX, float posY) {
         super(screen, posX, posY);
         fixtures = new LinkedList<>();
+        this.screen = screen;
 
         currentState = previousState = STATE.WALK;
 
@@ -205,7 +208,14 @@ public class BossElementEarth extends Enemy {
         setActionDuration();
         skillHandle();
 
-        if (isDead && stateTime >= 3f) isExist = false;
+        if (isDead && stateTime >= 3f) {
+            isExist = false;
+            if (stateTime >= 3.5f) {
+                MainCharacter.body.setTransform(new Vector2(50 / Boot.PPM, 570 / Boot.PPM), 0);
+                MainCharacter.isInMap2 = true;
+                screen.loadMap("Map2.tmx");
+            }
+        }
 
         if (isHurt) {
             heart--;
@@ -293,7 +303,7 @@ public class BossElementEarth extends Enemy {
 
         if (getHitCount() == 3 && readySkill_2) {
             useSkill_2 = true;
-            rangeAttack.ready = true;
+            rangeAttack.setReady(true);
             readySkill_2 = false;
         }
 
@@ -391,11 +401,11 @@ public class BossElementEarth extends Enemy {
         }
 
         if (isBleeding) {
-            if (explosionEffect.actionDuration >= 0.25f) {
+            if (explosionEffect.getActionDuration() >= 0.25f) {
                 isBleeding = false;
-                explosionEffect.actionDuration = 0;
+                explosionEffect.setActionDuration(0);
             }
-            explosionEffect.actionDuration += Gdx.graphics.getDeltaTime();
+            explosionEffect.updateActionDuration(Gdx.graphics.getDeltaTime());
         }
 
         if (useSkill_1) {
@@ -407,12 +417,12 @@ public class BossElementEarth extends Enemy {
         }
 
         if (useSkill_2) {
-            if (rangeAttack.actionDuration >= 2.5f) {
+            if (rangeAttack.getActionDuration() >= 2.5f) {
                 useSkill_2 = false;
-                rangeAttack.actionDuration = 0;
+                rangeAttack.setActionDuration(0);
                 rangeAttack.destroyBody();
             }
-            rangeAttack.actionDuration += Gdx.graphics.getDeltaTime();
+            rangeAttack.updateActionDuration(Gdx.graphics.getDeltaTime());
         }
     }
 
@@ -442,5 +452,6 @@ public class BossElementEarth extends Enemy {
     public void reverseVelocity() {
         isReverse = true;
     }
+
 
 }

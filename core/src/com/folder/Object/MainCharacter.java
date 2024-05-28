@@ -1,5 +1,8 @@
 package com.folder.Object;
 
+import box2dLight.DirectionalLight;
+import box2dLight.Light;
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -9,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.folder.Boot;
 
 import com.folder.Object.Enemy.Boss.BossElementEarth;
+import com.folder.Object.Enemy.Creep.Werewolves;
 import com.folder.Object.Enemy.Enemy;
 import com.folder.Object.MagicEffect.Effect.BleedingEffect;
 import com.folder.Object.MagicEffect.Effect.FireShield;
@@ -23,12 +27,12 @@ public class MainCharacter extends Sprite {
     private enum STATE {IDLE, RUN, JUMP, FALL, ATTACK_FLAME, ATTACK_NORMAL_1, ATTACK_NORMAL_2, ATTACK_NORMAL_3, ATTACK_HEAVY, LOOK_UP, LOOK_DOWN, DEAD, ROLL, HANG, PULL_UP, CLIMB, CLING, HEAL, HEAVY_HURT}
 
     private World world;
-    public static Body body;
     private LinkedList<Fixture> fixtures;
 
     private STATE previousState;
     private STATE currenState;
 
+    // Animation handle
     private Animation<TextureRegion> idle;
     private Animation<TextureRegion> run;
     private Animation<TextureRegion> flameAttack;
@@ -38,59 +42,43 @@ public class MainCharacter extends Sprite {
     private Animation<TextureRegion> heavyAttack;
     private Animation<TextureRegion> hang;
     private Animation<TextureRegion> pullUp;
-    private TextureRegion hurt;
     private Animation<TextureRegion> jump;
     private Animation<TextureRegion> fall;
     private Animation<TextureRegion> dead;
     private Animation<TextureRegion> roll;
     private Animation<TextureRegion> climb;
-    private TextureRegion cling;
     private Animation<TextureRegion> heal;
-    private TextureRegion heavyHurt;
 
     private TextureRegion lookUp;
     private TextureRegion lookDown;
+    private TextureRegion cling;
+    private TextureRegion hurt;
+    private TextureRegion heavyHurt;
 
-    static public float stateTime;
-    public static float actionDuration;
+    private float stateTime;
+    private float actionDuration;
 
     //State handle
-    public static boolean isTurningRight;
-    public static boolean isMoving;
-    public static boolean isJumping;
-    public static boolean isAttacking_Flame;
-    public static boolean isAttacking_Normal;
-    public static boolean isAttacking_heavy;
-    public static boolean isLooking;
-    public static boolean isLookingUp;
-    public static boolean isReturn;
-    public static boolean isFalling;
-    public static boolean isDestroy;
-    public static boolean isHurt;
-    public static boolean isBleeding;
-    public static boolean isDead;
-    public static boolean isRolling;
-    public static boolean isHanging;
-    public static boolean isPullUp;
-    public static boolean isClimbing;
-    public static boolean isClingLadder;
-    public static boolean isHealing;
-    public static boolean isHeavyHurt;
+    private boolean isTurningRight;
+    private boolean isAttacking_Flame;
+    private boolean isAttacking_Normal;
+    private boolean isAttacking_heavy;
+    private boolean isDestroy;
+    private boolean isRolling;
+    private boolean isPullUp;
+    private static boolean isHealing;
+
 
     private boolean setToDead;
     private boolean isChangeSite;
     private boolean isCreateFixture;
 
-    public static Vector2 velocity;
+    private Vector2 velocity;
 
-    public static boolean isAllowedMove;
-    public static boolean isAllowedJump;
-    public static boolean isOnAir;
-    public static boolean isTouchAirGround;
     public static boolean isInMap1;
     public static boolean isInMap2;
 
-    public static float jumpDistance;
+    private float jumpDistance;
 
     private MagicEffect bleedingEffect;
     private MagicEffect fireShield;
@@ -104,16 +92,34 @@ public class MainCharacter extends Sprite {
 
     private Vector2 previousPos;
 
-    GameScreen screen;
+    private GameScreen screen;
+
+    public static Body body;
+    public static boolean isMoving;
+    public static boolean isJumping;
+    public static boolean isLooking;
+    public static boolean isLookingUp;
+    public static boolean isReturn;
+    public static boolean isFalling;
+    public static boolean isHurt;
+    public static boolean isBleeding;
+    public static boolean isDead;
+    public static boolean isClimbing;
+    public static boolean isClingLadder;
+    public static boolean isHanging;
+    public static boolean isHeavyHurt;
+    public static boolean isAllowedNextMap;
+    public static boolean isAllowedMove;
+    public static boolean isAllowedJump;
+    public static boolean isOnAir;
+    public static boolean isTouchAirGround;
 
     public MainCharacter(GameScreen screen) {
         this.screen = screen;
-
         previousPos = new Vector2();
         world = screen.getWorld();
 
         fixtures = new LinkedList<>();
-
         isTurningRight = true;
         isJumping = false;
         isMoving = false;
@@ -138,6 +144,8 @@ public class MainCharacter extends Sprite {
         isClingLadder = false;
         isHealing = false;
         isHeavyHurt = false;
+
+        isAllowedNextMap = false;
 
         isOnAir = false;
         isTouchAirGround = false;
@@ -270,7 +278,7 @@ public class MainCharacter extends Sprite {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = Boot.CHARACTER_BIT;
-        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT | Boot.ENEMY_BIT | Boot.WALL_BIT | Boot.TOUCH_POINT_ON_AIR | Boot.HANG_POINT_BIT | Boot.LADDER_POINT_BIT;
+        fixtureDef.filter.maskBits = Boot.GROUND_BIT | Boot.ENEMY_ATTACK_BIT | Boot.OBJECT_TEST_BIT | Boot.ENEMY_BIT | Boot.WALL_BIT | Boot.TOUCH_POINT_ON_AIR | Boot.HANG_POINT_BIT | Boot.LADDER_POINT_BIT | Boot.DOOR_BIT;
 
         body.createFixture(fixtureDef).setUserData(this);
         shape.dispose();
@@ -306,7 +314,6 @@ public class MainCharacter extends Sprite {
     }
 
     public void action(float deltaTime) {
-
         if (!isDead) {
             inputHandle();
 
@@ -387,6 +394,8 @@ public class MainCharacter extends Sprite {
         if (!isHeavyHurt) {
             Gdx.input.setInputProcessor(new KeyUpHandle());
 
+            nextMapHandle();
+
             healHandle();
 
             climbHandle();
@@ -404,6 +413,30 @@ public class MainCharacter extends Sprite {
             siteHandle();
 
             lookHandle();
+
+        }
+    }
+
+    public void nextMapHandle() {
+        if (isAllowedNextMap) {
+            screen.loadMap("bossMap.tmx");
+            isAllowedNextMap = false;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+            isInMap2 = false;
+            screen.loadMap("Map1.tmx");
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+            isInMap2 = false;
+            screen.loadMap("bossMap.tmx");
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+            MainCharacter.body.setTransform(new Vector2(50 / Boot.PPM, 570 / Boot.PPM), 0);
+            isInMap2 = true;
+            screen.loadMap("Map2.tmx");
         }
     }
 
@@ -411,19 +444,7 @@ public class MainCharacter extends Sprite {
         if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
             isHealing = true;
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-//            MainCharacter.isInMap2 = true;
-//            MainCharacter.isInMap1 = false;
-            screen.loadMap("bossMap.tmx");
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
-//            MainCharacter.isInMap2 = true;
-//            MainCharacter.isInMap1 = false;
-            screen.loadMap("testMap1.tmx");
-        }
-
+        System.out.println(body.getPosition().x + " " + body.getPosition().y);
     }
 
     public void climbHandle() {
@@ -484,16 +505,16 @@ public class MainCharacter extends Sprite {
     }
 
     public void attackHandle() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) MainCharacter.isAttacking_Flame = true;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) MainCharacter.isAttacking_Normal = true;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) MainCharacter.isAttacking_heavy = true;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)) isAttacking_Flame = true;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) isAttacking_Normal = true;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) isAttacking_heavy = true;
     }
 
     public void movementHandle() {
         previousPos.set(body.getPosition());
         if (isAllowedMove && !isTouchAirGround)
             if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D))
-                MainCharacter.isMoving = true;
+                isMoving = true;
 
         if (isMoving) if (isTurningRight) velocity.set(4.3f, 0);
         else velocity.set(-4.3f, 0);
@@ -502,8 +523,8 @@ public class MainCharacter extends Sprite {
 
     public void siteHandle() {
         if (isChangeSite) {
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) MainCharacter.isTurningRight = false;
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) MainCharacter.isTurningRight = true;
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) isTurningRight = false;
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) isTurningRight = true;
         }
     }
 
@@ -536,9 +557,12 @@ public class MainCharacter extends Sprite {
             } else if (GameScreen.camera.position.y < 208 / Boot.PPM) GameScreen.camera.position.y += 4.5f / Boot.PPM;
         }
 
-        if (!isLooking)
-            if (body.getPosition().y >= 420 / Boot.PPM) GameScreen.camera.position.y = 500 / Boot.PPM;
-            else if (body.getPosition().y < 420 / Boot.PPM) GameScreen.camera.position.y = 210 / Boot.PPM;
+        if (!isLooking) if (body.getPosition().y >= 420 / Boot.PPM && body.getPosition().y < 724 / Boot.PPM)
+            GameScreen.camera.position.y = 500 / Boot.PPM;
+        else if (body.getPosition().y < 420 / Boot.PPM) GameScreen.camera.position.y = 210 / Boot.PPM;
+        else if (body.getPosition().y >= 724 / Boot.PPM) GameScreen.camera.position.y = 805 / Boot.PPM;
+
+
     }
 
     public void timeToDestroyFixture() {
@@ -614,11 +638,11 @@ public class MainCharacter extends Sprite {
         }
 
         if (isBleeding) {
-            if (bleedingEffect.actionDuration >= 0.25f) {
+            if (bleedingEffect.getActionDuration() >= 0.25f) {
                 isBleeding = false;
-                bleedingEffect.actionDuration = 0;
+                bleedingEffect.setActionDuration(0);
             }
-            bleedingEffect.actionDuration += deltaTime;
+            bleedingEffect.updateActionDuration(deltaTime);
         }
 
         if (isHeavyHurt) {
@@ -781,11 +805,12 @@ public class MainCharacter extends Sprite {
     }
 
     public void beStrongPushed(Enemy enemy) {
-        if (enemy instanceof BossElementEarth)
+        if (enemy instanceof BossElementEarth) {
             if (body.getPosition().x > enemy.getPosX()) body.applyForceToCenter(new Vector2(200f, 300f), true);
-                //body.applyLinearImpulse(new Vector2(4f, 4f), MainCharacter.body.getWorldCenter(), true);
             else body.applyForceToCenter(new Vector2(-200f, 300f), true);
-        //body.applyLinearImpulse(new Vector2(-4f, 4f), MainCharacter.body.getWorldCenter(), true);
+            MainCharacter.isHeavyHurt = true;
+        }
+        //else if (enemy instanceof Werewolves) collideEnemy(enemy);
 
     }
 

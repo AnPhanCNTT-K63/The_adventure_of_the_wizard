@@ -30,13 +30,13 @@ public class MenuScreen implements Screen {
     private SpriteBatch batch;
 
     private Viewport viewport;
-    public Stage stage;
+    private Stage stage;
 
     private TextButton exit;
     private TextButton play;
     private TextButton setting;
 
-    Boot boot;
+    private Boot boot;
 
 
     public MenuScreen(Boot boot) {
@@ -82,15 +82,16 @@ public class MenuScreen implements Screen {
         table.add(exit).width(300).height(100);
         table.padTop(300);
         stage.addActor(table);
-
     }
 
     @Override
     public void render(float delta) {
+
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (MenuHandle.escape) {
+            stage.dispose();
             boot.setScreen(new GameScreen(boot));
             MenuHandle.escape = false;
         }

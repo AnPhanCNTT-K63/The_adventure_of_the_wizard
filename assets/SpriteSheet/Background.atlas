@@ -1,0 +1,9 @@
+Background.png
+size:2048,4096
+repeat:none
+background
+bounds:0,1148,2048,1148
+background2
+bounds:0,2296,2048,1365
+background3
+bounds:0,0,2048,1148

@@ -1,0 +1,9 @@
+effectAtlas2.png
+size:8192,128
+repeat:none
+spiral
+bounds:6144,64,1024,64
+teslaBall
+bounds:0,0,4096,128
+tornado
+bounds:4096,0,2048,128

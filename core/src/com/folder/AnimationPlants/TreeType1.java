@@ -10,7 +10,7 @@ import com.folder.Tool.AnimationTileSetCreate;
 public class TreeType1 extends AnimationTileSetCreate {
     public TreeType1(GameScreen screen, float posX, float posY) {
         super(screen, posX, posY);
-        setBounds(posX, posY, 256 / Boot.PPM, 288 / Boot.PPM);
+        setBounds(posX, posY, 256 / Boot.INSTANCE.getPPM(), 288 / Boot.INSTANCE.getPPM());
         create();
     }
 

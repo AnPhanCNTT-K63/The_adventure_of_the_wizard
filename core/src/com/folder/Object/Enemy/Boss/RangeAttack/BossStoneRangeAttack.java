@@ -15,7 +15,7 @@ import com.folder.Screen.GameScreen;
 
 import java.util.Scanner;
 
-public class BossEarthRangeAttack extends Sprite {
+public class BossStoneRangeAttack extends Sprite {
     private Body body;
     private World world;
 
@@ -35,7 +35,7 @@ public class BossEarthRangeAttack extends Sprite {
     private boolean setToDestroy;
     private boolean ready;
 
-    public BossEarthRangeAttack(GameScreen screen, float posX, float posY, short categoryBit) {
+    public BossStoneRangeAttack(GameScreen screen, float posX, float posY, short categoryBit) {
         world = screen.getWorld();
         velocity = new Vector2();
 
@@ -50,14 +50,13 @@ public class BossEarthRangeAttack extends Sprite {
         actionDuration = 0;
 
         frames = new Array<>();
-        for (int i = 3; i < 6; i++)
-            frames.add(new TextureRegion(screen.getEffectAtlas().findRegion("Comet"), i * 128, 0, 128, 128));
+        for (int i = 8; i < 11; i++)
+            frames.add(new TextureRegion(screen.getEffectAtlas2().findRegion("tornado"), i * 128, 0, 128, 128));
         animation = new Animation<TextureRegion>(1 / 4f, frames);
-
     }
 
     public void defineBody() {
-        setBounds(posX, posY, 300 / Boot.PPM, 300 / Boot.PPM);
+        setBounds(posX, posY, 300 / Boot.INSTANCE.getPPM(), 300 / Boot.INSTANCE.getPPM());
         velocity.set(5, 0);
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -86,8 +85,8 @@ public class BossEarthRangeAttack extends Sprite {
         stateTime += deltaTime;
         region = animation.getKeyFrame(stateTime, true);
         setRegion(region);
-        body.setTransform(6 * stateTime, 100 / Boot.PPM, 0);
-        setBounds(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2 + 25 / Boot.PPM, 300 / Boot.PPM, 300 / Boot.PPM);
+        body.setTransform(6 * stateTime, 100 / Boot.INSTANCE.getPPM(), 0);
+        setBounds(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2 + 25 / Boot.INSTANCE.getPPM(), 300 / Boot.INSTANCE.getPPM(), 300 / Boot.INSTANCE.getPPM());
     }
 
     public void destroyBody() {
